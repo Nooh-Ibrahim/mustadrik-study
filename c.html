@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>بيفتح المادة…</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<style>
+@font-face{font-family:"IBM Plex Sans Arabic";src:url(fonts/plex-ar-400.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"IBM Plex Sans Arabic";src:url(fonts/plex-ar-700.woff2) format("woff2");font-weight:700}
+:root{--bg:#F7F3EA;--ink:#0F1D3A;--muted:#4E5874;--gold:#D0AE62;--btn:#0F1D3A;--on:#F3E3B5}
+@media (prefers-color-scheme:dark){:root{--bg:#0B1530;--ink:#EFE7D3;--muted:#B5BCCF;--btn:#D0AE62;--on:#0B1530}}
+html[data-theme=light]{--bg:#F7F3EA;--ink:#0F1D3A;--muted:#4E5874;--btn:#0F1D3A;--on:#F3E3B5}
+html[data-theme=dark]{--bg:#0B1530;--ink:#EFE7D3;--muted:#B5BCCF;--btn:#D0AE62;--on:#0B1530}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--ink);font:19px/1.8 "IBM Plex Sans Arabic",Tahoma,sans-serif;text-align:center;padding:16px;box-sizing:border-box}
+.sp{width:46px;height:46px;margin:0 auto 1rem;border-radius:50%;border:5px solid var(--gold);border-top-color:transparent;animation:r 1s linear infinite}
+@keyframes r{to{transform:rotate(360deg)}}
+h1{font-size:1.35rem;margin:0}
+p{color:var(--muted);margin:.4rem 0 0}
+a{display:inline-block;margin-top:1rem;padding:.55rem 1.4rem;border-radius:1rem;background:var(--btn);color:var(--on);font-weight:700;text-decoration:none}
+</style>
+<script>try{var t=localStorage.getItem("hub-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<script src="acct.js"></script>
+</head>
+<body>
+<div id="m"><div class="sp" aria-hidden="true"></div><h1 id="h">بيفتح المادة…</h1><p id="p"></p></div>
+<script>
+// بيفتح ملف المادة بالتصريح (الملفات مش على GitHub، على السيرفر ومقفولة).
+// - من غير اسم ورقم: يرجع للصفحة الرئيسية يسجّل.
+// - الملف بيتحفظ على الجهاز (mustadrak-study-content)، وبيتجاب تاني بس لو اتغيّر (ETag)، فبيفتح من غير نت.
+// - المادة بتتكتب في نفس الصفحة (document.write)، فبتفضل على نفس الموقع ونفس التقدّم (localStorage).
+(function () {
+  "use strict";
+  var EP = "https://mustadrak-stats.mustadrak.workers.dev";
+  function get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  if (location.hostname === "localhost" && get("mst-ep")) EP = get("mst-ep");
+  var s = (/[?&]s=([A-Za-z0-9]+_[A-Za-z0-9_]+)/.exec(location.search) || [])[1];
+  var H = document.getElementById("h"), P = document.getElementById("p");
+  function msg(h, p, back) { document.querySelector(".sp").remove(); H.textContent = h; P.textContent = p || ""; if (back !== false) { var a = document.createElement("a"); a.href = "./"; a.textContent = "ارجع للصفحة الرئيسية"; document.getElementById("m").appendChild(a); } }
+  if (!s) return msg("اللينك ناقص", "افتح المادة من الصفحة الرئيسية.");
+  if (!get("mst-name")) { location.replace("./#who"); return; }
+  var url = EP + "/file/" + s + ".html", old = new URL("courses/" + s + ".html", location.href).href, cache = null, cached = null;
+  var old2 = location.origin + "/mustadrak-study/courses/" + s + ".html"; // من قبل ما اللينك يتغيّر (الإصدار 6)
+  function show(html) { document.open(); document.write(html); document.close(); }
+  function timeout(ms) { return new Promise(function (ok) { setTimeout(function () { ok("slow"); }, ms); }); }
+  function load(tok) {
+    var h = { "X-Tok": tok }; if (cached && cached.url !== old && cached.url !== old2 && cached.headers.get("ETag")) h["If-None-Match"] = cached.headers.get("ETag");
+    return fetch(url, { headers: h, cache: "no-store" });
+  }
+  function fromCache() { return cached.text().then(show); }
+  function offline() { if (cached) return fromCache(); msg("المادة دي لسه ماتحفظتش على جهازك", "افتحها مرة وإنت متوصل بالنت، وبعد كده هتفتح من غير نت."); }
+  (window.caches ? caches.open("mustadrak-study-content").then(function (c) { cache = c; return c.match(url).then(function (r) { return r || c.match(old, { ignoreSearch: true }); }).then(function (r) { return r || c.match(old2, { ignoreSearch: true }); }); }) : Promise.resolve(null)).then(function (r) {
+    cached = r || null;
+    if (navigator.onLine === false) return offline();
+    var go = window.MSTA.ensure().then(function (tok) {
+      return load(tok).then(function (res) {
+        if (res.status !== 401) return res;
+        try { localStorage.removeItem("mst-tok"); } catch (e) {}
+        return window.MSTA.ensure().then(load);
+      });
+    });
+    // لو فيه نسخة محفوظة والنت بطيء (أكتر من 6 ثواني): افتح المحفوظ
+    return Promise.race([go, cached ? timeout(6000) : new Promise(function () {})]).then(function (res) {
+      if (res === "slow") { go.then(function (r2) { if (r2 && r2.ok && cache) cache.put(url, r2); }).catch(function () {}); return fromCache(); } // النسخة الجديدة للمرة الجاية
+      if (res.status === 304 && cached) return fromCache();
+      if (res.ok) {
+        var copy = res.clone();
+        return (cache ? cache.put(url, copy).then(function () { return cache.delete(old).then(function () { return cache.delete(old2); }); }).catch(function () {}) : Promise.resolve()).then(function () { return res.text(); }).then(show);
+      }
+      if (res.status === 403) return res.json().then(function (j) {
+        if (j.err === "blocked") msg("الوصول للملفات اتقفل لرقمك", "لو ده غلط، كلّم نوح.");
+        else msg("المادة دي مقفولة دلوقتي", "هتفتح قريب إن شاء الله.");
+      });
+      if (cached) return fromCache();
+      msg("الملف مش موجود دلوقتي", "جرّب كمان شوية، ولو فضل كده كلّم نوح.");
+    });
+  }).catch(function (e) {
+    if (e && e.message === "blocked") return msg("الوصول للملفات اتقفل لرقمك", "لو ده غلط، كلّم نوح.");
+    if (e && e.message === "noname") { location.replace("./#who"); return; }
+    offline();
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "الملفات الدراسية · مُستدرِك",
+  "short_name": "الملفات الدراسية",
+  "description": "الملفات الدراسية لدفعة 2030، كلية الذكاء الاصطناعي، جامعة الدلتا. من مُستدرِك.",
+  "id": "/mustadrik-study/",
+  "start_url": "/mustadrik-study/",
+  "scope": "/mustadrik-study/",
+  "display": "standalone",
+  "lang": "ar",
+  "dir": "rtl",
+  "background_color": "#0F1D3A",
+  "theme_color": "#0F1D3A",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon-180.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
