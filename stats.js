@@ -46,7 +46,10 @@
   var busy = false;
   function flush(leaving) {
     if (!SEND || !q.length || busy || navigator.onLine === false) return;
-    var batch = q.slice(0, 50), body = JSON.stringify(batch);
+    // الأحداث بتتبعت بالتصريح بس (من 2026-10-16). من غير تسجيل بتستنى في الطابور لحد ما الاسم يتبعت
+    var tok = get("mst-tok");
+    if (!tok || get("mst-blocked") === "1") { sendWho(); return; }
+    var batch = q.slice(0, 50), body = JSON.stringify({ tok: tok, ev: batch });
     // text/plain عشان الطلب يبقى بسيط (من غير طلب استئذان قبله)
     if (leaving && navigator.sendBeacon) {
       if (navigator.sendBeacon(EP + "/hit", new Blob([body], { type: "text/plain" }))) { q = q.slice(batch.length); set("mst-q", JSON.stringify(q)); }
@@ -54,7 +57,7 @@
     }
     busy = true;
     fetch(EP + "/hit", { method: "POST", headers: { "Content-Type": "text/plain" }, body: body, keepalive: true })
-      .then(function (r) { busy = false; if (r.ok) { q = q.slice(batch.length); set("mst-q", JSON.stringify(q)); if (q.length) flush(); } })
+      .then(function (r) { busy = false; if (r.status === 401) { set("mst-tok", ""); set("mst-who-sent", "0"); sendWho(); } if (r.status === 403) set("mst-blocked", "1"); if (r.ok) { q = q.slice(batch.length); set("mst-q", JSON.stringify(q)); if (q.length) flush(); } })
       .catch(function () { busy = false; });
     sendWho();
   }
@@ -62,7 +65,7 @@
   // الاسم والرقم: بيتبعتوا مرة، ولو مفيش نت بيتبعتوا بعدين
   // التسجيل بيرجّع «تصريح» (mst-tok) على الحساب (mst-acct): بيفتح الملفات ويزامن التقدّم (acct.js)
   function sendWho() {
-    if (!SEND || (get("mst-who-sent") === "1" && get("mst-tok")) || !get("mst-name")) return;
+    if (!SEND || (get("mst-who-sent") === "1" && get("mst-tok")) || !get("mst-name") || get("mst-blocked") === "1") return;
     var acct = get("mst-acct"); if (!acct) { acct = rid(); set("mst-acct", acct); }
     fetch(EP + "/who", { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ dev: dev, name: get("mst-name"), phone: get("mst-phone") || "", acct: acct, dv: dv }) })
       .then(function (r) { return r.json().then(function (j) { if (r.ok && j.tok) { set("mst-who-sent", "1"); set("mst-tok", j.tok); set("mst-acct", j.acct); } else if (j.blocked) set("mst-blocked", "1"); }); }).catch(function () {});
