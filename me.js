@@ -1,5 +1,5 @@
 // الصفحة الرئيسية: كارت الاسم، و«أهلاً يا …»، وقسم «وقتي».
-// بيقرا السجل من localStorage (mst-log) اللي stats.js بيكتبه، فبيشتغل من غير نت.
+// بيقرا السجل من localStorage (mst-log) اللي stats.js بيكتبه، فبيشتغل من غير نت، وبيزوّد عليه وقت باقي أجهزة الحساب من /mytime (mst-tlog).
 // ?demo=1 بيعرض أرقام تجريبية (من غير ما يحفظ حاجة)، عشان نشوف شكل «وقتي».
 (function () {
   "use strict";
@@ -66,11 +66,30 @@
   }
   var log = DEMO ? demoLog() : (function () { try { return JSON.parse(get("mst-log")) || {}; } catch (e) { return {}; } })();
   var range = 7;
-  function secsOf(d, c) { var e = log[d]; if (!e) return 0; if (c) return e[c] ? e[c][0] : 0; return COURSES.reduce(function (s, k) { return s + (e[k[0]] ? e[k[0]][0] : 0); }, 0); }
+  // وقت باقي أجهزة الحساب من السيرفر (/mytime): o = الجهاز ده، و x = الأجهزة التانية المربوطة.
+  // الوقت = أكبر (المحلي، o) + x، فالجهاز اللي سجلّه اتمسح بياخد وقته من السيرفر، ومفيش حاجة بتتحسب مرتين.
+  function getJ(k) { try { return JSON.parse(get(k)) || {}; } catch (e) { return {}; } }
+  var TL = DEMO ? {} : getJ("mst-tlog");
+  function one(d, c) {
+    var e = log[d], l = e && e[c] ? e[c][0] : 0, o = TL.o && TL.o[d] && TL.o[d][c] || 0, x = TL.x && TL.x[d] && TL.x[d][c] || 0;
+    return Math.max(l, o) + x;
+  }
+  function secsOf(d, c) { if (c) return one(d, c); return COURSES.reduce(function (s, k) { return s + one(d, k[0]); }, 0); }
+  function allDays() { var D = {}; [log, TL.o || {}, TL.x || {}].forEach(function (m) { Object.keys(m).forEach(function (d) { D[d] = 1; }); }); return Object.keys(D); }
+  var EP = "https://mustadrak-stats.mustadrak.workers.dev", tAt = 0;
+  if (location.hostname === "localhost" && get("mst-ep")) EP = get("mst-ep");
+  function pull() {
+    var tok = get("mst-tok"); if (DEMO || !tok || navigator.onLine === false || Date.now() - tAt < 20000) return;
+    tAt = Date.now();
+    fetch(EP + "/mytime", { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ tok: tok }) })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { if (!j || !j.ok) return; TL = { o: j.o || {}, x: j.x || {}, at: Date.now() }; set("mst-tlog", JSON.stringify(TL)); draw(); })
+      .catch(function () {});
+  }
   function draw() {
     var now = Date.now(), today = day(now), days = [];
     for (var i = range - 1; i >= 0; i--) days.push(day(now - i * 864e5));
-    var all = Object.keys(log).reduce(function (s, d) { return s + secsOf(d); }, 0);
+    var all = allDays().reduce(function (s, d) { return s + secsOf(d); }, 0);
     if (!all) { $("mytime").hidden = true; return; } // لسه مفيش وقت جوّه المواد
     $("mytime").hidden = false;
     var inRange = days.reduce(function (s, d) { return s + secsOf(d); }, 0);
@@ -94,6 +113,8 @@
   [].forEach.call(document.querySelectorAll("[data-range]"), function (b) {
     b.addEventListener("click", function () { range = +b.getAttribute("data-range"); draw(); });
   });
-  draw();
-  addEventListener("pageshow", function () { if (!DEMO) { try { log = JSON.parse(get("mst-log")) || {}; } catch (e) {} draw(); } });
+  draw(); pull();
+  addEventListener("pageshow", function () { if (!DEMO) { try { log = JSON.parse(get("mst-log")) || {}; } catch (e) {} draw(); pull(); } });
+  addEventListener("mst-sync", function () { tAt = 0; pull(); });
+  addEventListener("mst-time", function () { tAt = 0; pull(); }); // «زامن دلوقتي» وبعد الربط
 })();

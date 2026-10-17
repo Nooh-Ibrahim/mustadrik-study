@@ -27,8 +27,15 @@
     return '<section class="card course' + (open ? "" : " soon") + '" aria-labelledby="c-' + c + '" data-base="' + esc(s.base) + '">' +
       '<p class="code en">' + esc(s.code) + '</p><h3 id="c-' + c + '">' + esc(s.name) + '</h3>' +
       (open ? '<p class="saved">افتحها مرة بالنت عشان تتحفظ</p><a class="go" href="c.html?s=' + encodeURIComponent(s.base) + '">افتح المادة</a>' +
-        (s.pdf_size ? '<button type="button" class="pdf" data-pdf="' + esc(s.base) + '">نسخة الطباعة<span class="en">PDF · ' + mb(s.pdf_size) + '</span></button>' : "")
+        (s.pdf_size ? '<button type="button" class="pdf" data-pdf="' + esc(s.base) + '">نسخة الطباعة كاملة<span class="en">PDF · ' + mb(s.pdf_size) + '</span></button>' : "") + lecPdfs(s)
         : '<p class="saved">قريباً</p>') + "</section>";
+  }
+  // ملف طباعة لكل محاضرة (s.lec_pdfs من السيرفر: [{n: "L1", t: "المحاضرة 1", size}])، مقفول لحد ما يدوس عليه
+  function lecPdfs(s) {
+    var l = s.lec_pdfs; if (!l || !l.length) return "";
+    return '<details class="lpdf"><summary>ملف لكل محاضرة (' + l.length + ")</summary>" + l.map(function (x) {
+      return '<button type="button" class="pdf lp" data-pdf="' + esc(s.base + "_" + x.n) + '">' + esc(x.t) + '<span class="en">PDF · ' + mb(x.size) + "</span></button>";
+    }).join("") + "</details>";
   }
   function draw() { $("courses").innerHTML = list().map(card).join(""); saved(); }
   // كل كارت بيقول مادته محفوظة على الجهاز ولا لأ
@@ -88,7 +95,7 @@
     A.sync(list().map(function (s) { return s.skey; })).then(function (r) {
       m.textContent = r.changed.length ? "✓ اتزامن، وجالك تقدّم جديد في " + r.changed.length + " مادة." : "✓ اتزامن، وكله متطابق.";
     }, function (e) { m.textContent = e.message === "blocked" ? "الوصول مقفول لرقمك." : "مفيش نت دلوقتي. هيتزامن لوحده بعدين."; })
-      .then(function () { if (btn) btn.disabled = false; status(); });
+      .then(function () { if (btn) btn.disabled = false; status(); try { window.dispatchEvent(new CustomEvent("mst-time")); } catch (e) {} });
   }
   var cd = 0;
   function showCode(btn) {
@@ -134,7 +141,7 @@
     e.preventDefault();
     var m = $("join-err"), btn = e.target.querySelector("button[type=submit]");
     m.hidden = true; btn.disabled = true;
-    A.join($("join-code").value).then(function (r) {
+    A.join($("join-code").value).then(function (r) { try { window.dispatchEvent(new CustomEvent("mst-time")); } catch (e) {}
       document.documentElement.classList.remove("gate"); $("who").hidden = true; $("join").hidden = true;
       if (window.MSTHello) window.MSTHello();
       $("acc-msg").textContent = "✓ الجهاز ده اتربط بحسابك" + (r.changed && r.changed.length ? "، وجالك تقدّمك في " + r.changed.length + " مادة." : ".");
