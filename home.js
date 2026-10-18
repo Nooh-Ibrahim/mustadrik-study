@@ -18,7 +18,8 @@
     { code: "CSC115", name: "مقدمة في نظم الحاسب", base: "CSC115_ComputerSystems", skey: "cis1ch1", state: "open", pdf_size: 6290452 },
     { code: "BAS112", name: "التفاضل والتكامل", base: "BAS112_Calculus", skey: "calc1w1", state: "open", pdf_size: 5717314 },
     { code: "BAS113", name: "الجبر الخطي", base: "BAS113_LinearAlgebra", skey: "linalg1w1", state: "open", pdf_size: 3864115 },
-    { code: "BAS116", name: "أساسيات الكهرباء والإلكترونيات", base: "BAS116_Electronics", skey: "bas116", state: "open", pdf_size: 2358743 }
+    { code: "BAS116", name: "أساسيات الكهرباء والإلكترونيات", base: "BAS116_Electronics", skey: "bas116", state: "open", pdf_size: 2358743 },
+    { code: "GEN002", name: "اللغة الإنجليزية 1", base: "GEN002_English", skey: "gen002", state: "open", pdf_size: 0 }
   ];
   function list() { try { var l = JSON.parse(get("mst-subjects")); if (l && l.length) return l; } catch (e) {} return DEFAULT; }
   function mb(b) { return b ? (b / 1048576).toFixed(1) + " MB" : ""; }

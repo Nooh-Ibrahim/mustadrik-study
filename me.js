@@ -3,7 +3,7 @@
 // ?demo=1 بيعرض أرقام تجريبية (من غير ما يحفظ حاجة)، عشان نشوف شكل «وقتي».
 (function () {
   "use strict";
-  var COURSES = [["bas114", "الفيزياء"], ["csc115", "نظم الحاسب"], ["bas112", "التفاضل والتكامل"], ["bas113", "الجبر الخطي"], ["bas116", "الكهرباء والإلكترونيات"]];
+  var COURSES = [["bas114", "الفيزياء"], ["csc115", "نظم الحاسب"], ["bas112", "التفاضل والتكامل"], ["bas113", "الجبر الخطي"], ["bas116", "الكهرباء والإلكترونيات"], ["gen002", "الإنجليزي"]];
   // المواد الجديدة اللي نوح بيضيفها من صفحة الإدارة (home.js بيحفظ اللستة في mst-subjects)
   try { var SL = JSON.parse(localStorage.getItem("mst-subjects")); if (SL && SL.length) COURSES = SL.filter(function (s) { return s.state !== "hidden"; }).map(function (s) { return [s.code.toLowerCase(), s.name]; }); } catch (e) {}
   var DAYS = ["الحد", "الاتنين", "التلات", "الأربع", "الخميس", "الجمعة", "السبت"];
