@@ -26,7 +26,7 @@
   function card(s) {
     var c = s.code.toLowerCase(), open = s.state === "open";
     return '<section class="card course' + (open ? "" : " soon") + '" aria-labelledby="c-' + c + '" data-base="' + esc(s.base) + '">' +
-      '<p class="code en">' + esc(s.code) + '</p><h3 id="c-' + c + '">' + esc(s.name) + '</h3>' +
+      (s.grp ? "" : '<p class="code en">' + esc(s.code) + "</p>") + '<h3 id="c-' + c + '">' + esc(s.name) + '</h3>' +
       (open ? '<p class="saved">افتحها مرة بالنت عشان تتحفظ</p><a class="go" href="c.html?s=' + encodeURIComponent(s.base) + '">افتح المادة</a>' +
         (s.pdf_size ? '<button type="button" class="pdf" data-pdf="' + esc(s.base) + '">نسخة الطباعة كاملة<span class="en">PDF · ' + mb(s.pdf_size) + '</span></button>' : "") + lecPdfs(s)
         : '<p class="saved">قريباً</p>') + "</section>";
@@ -38,7 +38,17 @@
       return '<button type="button" class="pdf lp" data-pdf="' + esc(s.base + "_" + x.n) + '">' + esc(x.t) + '<span class="en">PDF · ' + mb(x.size) + "</span></button>";
     }).join("") + "</details>";
   }
-  function draw() { $("courses").innerHTML = list().map(card).join(""); saved(); }
+  // المواد الخاصة (s.grp، بكود): كل مجموعة تحت عنوانها، ومواد الدفعة تحت «مواد الذكاء الاصطناعي». ومن غير كود: زي الأول بالظبط.
+  function groups() { try { var g = JSON.parse(get("mst-groups")); if (g && g.length) return g; } catch (e) {} return []; }
+  function draw() {
+    var l = list(), G = groups().filter(function (g) { return l.some(function (s) { return s.grp === g.grp; }); });
+    $("courses").innerHTML = l.filter(function (s) { return !s.grp; }).map(card).join("");
+    if ($("courses-h")) $("courses-h").textContent = G.length ? "مواد الذكاء الاصطناعي" : "المواد";
+    if ($("gcourses")) $("gcourses").innerHTML = G.map(function (g) {
+      return '<h2 class="sec">' + esc(g.name) + '</h2><div class="courses">' + l.filter(function (s) { return s.grp === g.grp; }).map(card).join("") + "</div>";
+    }).join("");
+    saved();
+  }
   // كل كارت بيقول مادته محفوظة على الجهاز ولا لأ
   function saved() {
     if (!window.caches) return;
@@ -51,11 +61,44 @@
     });
   }
   draw();
-  fetch(EP + "/subjects", { cache: "no-store" }).then(function (r) { return r.json(); }).then(function (j) {
-    if (!j.list || !j.list.length) return;
-    var s = JSON.stringify(j.list); if (s === get("mst-subjects")) return;
-    set("mst-subjects", s); draw();
-  }).catch(function () {});
+  // بالتصريح لو موجود، عشان المواد الخاصة اللي الحساب دخل كودها تيجي معاها
+  function pullSubjects() {
+    var tok = get("mst-tok"), h = tok ? { "X-Tok": tok } : {};
+    return fetch(EP + "/subjects", { cache: "no-store", headers: h }).then(function (r) { return r.json(); }).then(function (j) {
+      if (!j.list || !j.list.length) return;
+      var s = JSON.stringify(j.list), g = JSON.stringify(j.groups || []);
+      if (s === get("mst-subjects") && g === (get("mst-groups") || "[]")) return;
+      set("mst-subjects", s); set("mst-groups", g); draw();
+    }).catch(function () {});
+  }
+  pullSubjects();
+
+  // ---------- كود مادة خاصة (مثلاً مواد الهندسة) ----------
+  // اللينك ممكن يبقى فيه الكود (?code=...): بيتحفظ، ويتبعت أول ما يبقى فيه اسم وتصريح (حتى لو سجّل بعدين)
+  var qc = (/[?&]code=([A-Za-z0-9-]{4,24})/.exec(location.search) || [])[1];
+  if (qc) { set("mst-gcode", qc); try { history.replaceState(null, "", location.pathname); } catch (e) {} }
+  function redeem(code, m) {
+    if (!A || !A.on) { if (m) m.textContent = "الكود محتاج الموقع الحقيقي (nooh-ibrahim.github.io)."; return Promise.resolve(); }
+    return A.ensure().then(function (tok) {
+      return fetch(EP + "/redeem", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tok: tok, code: code }) })
+        .then(function (r) { return r.json().catch(function () { return {}; }); });
+    }).then(function (j) {
+      if (j.ok) { try { localStorage.removeItem("mst-gcode"); } catch (e) {} if (m) { m.className = "fine okm"; m.textContent = "✓ اتفتحت: " + j.name + "."; } return pullSubjects(); }
+      if (j.err === "code") { try { localStorage.removeItem("mst-gcode"); } catch (e) {} }
+      if (m) m.textContent = j.err === "many" ? "محاولات كتير غلط. استنى ساعة وجرّب تاني." : j.err === "code" ? "الكود ده مش صح. اتأكد منه من اللي بعتهولك." : j.blocked ? "الوصول مقفول لرقمك. كلّم نوح." : "حصل مشكلة. جرّب تاني.";
+    }, function (e) { if (m) m.textContent = e.message === "noname" ? "اكتب اسمك ورقمك فوق الأول، وبعدين الكود." : "محتاج نت عشان الكود."; });
+  }
+  function pending() { var c = get("mst-gcode"); if (c && get("mst-name")) redeem(c, $("g-msg")); }
+  pending();
+  addEventListener("mst-sync", pending); // بعد ما يكتب اسمه ورقمه (me.js)
+  if ($("g-open") && $("g-box")) {
+  $("g-open").addEventListener("click", function () { var b = $("g-box"); b.hidden = !b.hidden; if (!b.hidden) $("g-code").focus(); });
+  $("g-box").addEventListener("submit", function (e) {
+    e.preventDefault(); var m = $("g-msg"), v = $("g-code").value.trim(); m.className = "fine"; m.textContent = "";
+    if (v.length < 4) { m.textContent = "اكتب الكود كامل."; return; }
+    m.textContent = "لحظة…"; redeem(v, m);
+  });
+  }
 
   // ملف الطباعة: بيتجاب بالتصريح، وبيتحفظ على الجهاز، وبعدين ينزل
   document.addEventListener("click", function (e) {
