@@ -18,7 +18,7 @@ body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--
 .sp{width:46px;height:46px;margin:0 auto 1rem;border-radius:50%;border:5px solid var(--gold);border-top-color:transparent;animation:r 1s linear infinite}
 @keyframes r{to{transform:rotate(360deg)}}
 h1{font-size:1.35rem;margin:0}
-p{color:var(--muted);margin:.4rem 0 0}
+p{color:var(--muted);margin:.4rem 0 0;white-space:pre-line;font-variant-numeric:tabular-nums}
 a{display:inline-block;margin-top:1rem;padding:.55rem 1.4rem;border-radius:1rem;background:var(--btn);color:var(--on);font-weight:700;text-decoration:none}
 </style>
 <script>try{var t=localStorage.getItem("hub-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
@@ -50,6 +50,25 @@ a{display:inline-block;margin-top:1rem;padding:.55rem 1.4rem;border-radius:1rem;
     return fetch(url, { headers: h, cache: "no-store" });
   }
   function fromCache() { return cached.text().then(show); }
+  // حجم المادة من لستة الصفحة الرئيسية (mst-subjects)، عشان العدّاد يقول «نزل كام من كام»
+  function size() { try { var l = JSON.parse(get("mst-subjects")) || []; for (var i = 0; i < l.length; i++) if (l[i].base === s) return +l[i].html_size || 0; } catch (e) {} return 0; }
+  // بيقرا الملف حتة حتة ويكتب اللي نزل. لو السيرفر بطيء (بعد 20 ثانية ولسه أقل من النص): بيقول كده، وبيكمّل
+  function readText(res) {
+    if (!res.body || !window.TextDecoder) return res.text();
+    var rd = res.body.getReader(), dec = new TextDecoder(), out = [], n = 0, all = size(), t0 = Date.now();
+    var mb = function (b) { return (b / 1048576).toFixed(1); };
+    function step() {
+      return rd.read().then(function (x) {
+        if (x.done) { out.push(dec.decode()); return out.join(""); }
+        n += x.value.length; out.push(dec.decode(x.value, { stream: true }));
+        var t = all ? "نزل " + mb(n) + " من " + mb(all) + " ميجا (" + Math.min(99, Math.floor(n * 100 / all)) + "%)" : "نزل " + mb(n) + " ميجا";
+        if (Date.now() - t0 > 20000 && (!all || n < all / 2)) t += "\nالسيرفر بطيء دلوقتي، والمادة لسه بتنزل. سيب الصفحة مفتوحة، أو جرّب كمان شوية.";
+        P.textContent = t;
+        return step();
+      });
+    }
+    return step();
+  }
   function offline() { if (cached) return fromCache(); msg("المادة دي لسه ماتحفظتش على جهازك", "افتحها مرة وإنت متوصل بالنت، وبعد كده هتفتح من غير نت."); }
   (window.caches ? caches.open("mustadrak-study-content").then(function (c) { cache = c; return c.match(url).then(function (r) { return r || c.match(old, { ignoreSearch: true }); }).then(function (r) { return r || c.match(old2, { ignoreSearch: true }); }); }) : Promise.resolve(null)).then(function (r) {
     cached = r || null;
@@ -66,8 +85,11 @@ a{display:inline-block;margin-top:1rem;padding:.55rem 1.4rem;border-radius:1rem;
       if (res === "slow") { go.then(function (r2) { if (r2 && r2.ok && cache) cache.put(url, r2); }).catch(function () {}); return fromCache(); } // النسخة الجديدة للمرة الجاية
       if (res.status === 304 && cached) return fromCache();
       if (res.ok) {
-        var copy = res.clone();
-        return (cache ? cache.put(url, copy).then(function () { return cache.delete(old).then(function () { return cache.delete(old2); }); }).catch(function () {}) : Promise.resolve()).then(function () { return res.text(); }).then(show);
+        var put = cache ? cache.put(url, res.clone()).then(function () { return cache.delete(old).then(function () { return cache.delete(old2); }); }).catch(function () {}) : Promise.resolve();
+        var txt = readText(res);
+        // السيرفر رد بس الملف بينزل ببطء، وفيه نسخة محفوظة: افتح المحفوظ بعد 8 ثواني، والجديد يكمّل للمرة الجاية
+        if (cached) return Promise.race([txt, timeout(8000)]).then(function (t) { return t === "slow" ? fromCache() : put.then(function () { show(t); }); });
+        return Promise.all([put, txt]).then(function (r) { show(r[1]); });
       }
       if (res.status === 403) return res.json().then(function (j) {
         if (j.err === "blocked") msg("الوصول للملفات اتقفل لرقمك", "لو ده غلط، كلّم نوح.");
