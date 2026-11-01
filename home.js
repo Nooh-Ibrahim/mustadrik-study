@@ -1,5 +1,5 @@
 // الصفحة الرئيسية: كروت المواد (من السيرفر، عشان أي مادة نوح يضيفها من صفحة الإدارة تظهر لوحدها)،
-// وتحميل ملف الطباعة بالتصريح، وكارت «حسابك على أكتر من جهاز» (المزامنة، والربط بكود، والنسخة الاحتياطية).
+// (الكارت بيودّي لصفحة المادة m.html، وملفات الطباعة بقت هناك: pdf.js)، وكارت «حسابك على أكتر من جهاز» (المزامنة، والربط بكود، والنسخة الاحتياطية).
 // لستة المواد بتتحفظ في localStorage (mst-subjects)، فالكروت بتظهر من غير نت.
 (function () {
   "use strict";
@@ -22,21 +22,22 @@
     { code: "GEN002", name: "اللغة الإنجليزية 1", base: "GEN002_English", skey: "gen002", state: "open", pdf_size: 0 }
   ];
   function list() { try { var l = JSON.parse(get("mst-subjects")); if (l && l.length) return l; } catch (e) {} return DEFAULT; }
-  function mb(b) { return b ? (b / 1048576).toFixed(1) + " MB" : ""; }
-  function card(s) {
-    var c = s.code.toLowerCase(), open = s.state === "open";
-    return '<section class="card course' + (open ? "" : " soon") + '" aria-labelledby="c-' + c + '" data-base="' + esc(s.base) + '">' +
-      (s.grp ? "" : '<p class="code en">' + esc(s.code) + "</p>") + '<h3 id="c-' + c + '">' + esc(s.name) + '</h3>' +
-      (open ? '<p class="saved">افتحها مرة بالنت عشان تتحفظ</p><a class="go" href="c.html?s=' + encodeURIComponent(s.base) + '">افتح المادة</a>' +
-        (s.pdf_size ? '<button type="button" class="pdf" data-pdf="' + esc(s.base) + '">نسخة الطباعة كاملة<span class="en">PDF · ' + mb(s.pdf_size) + '</span></button>' : "") + lecPdfs(s)
-        : '<p class="saved">قريباً</p>') + "</section>";
+  // معلومات صفحات المواد (data/courses.json: عدد الدروس والأسئلة والملاعب). بتتحفظ في mst-cinfo عشان تظهر من غير نت.
+  function info() { try { return JSON.parse(get("mst-cinfo")) || {}; } catch (e) { return {}; } }
+  function meta(s) {
+    var c = (info().courses || {})[s.base]; if (!c) return "";
+    var n = c.counts, bits = [n.lessons + " درس", n.q + " سؤال"];
+    if (n.labs) bits.push(n.labs + " ملعب"); else if (n.plots) bits.push(n.plots + " رسمة");
+    return '<p class="cmeta">' + bits.join(" · ") + "</p>";
   }
-  // ملف طباعة لكل محاضرة (s.lec_pdfs من السيرفر: [{n: "L1", t: "المحاضرة 1", size}])، مقفول لحد ما يدوس عليه
-  function lecPdfs(s) {
-    var l = s.lec_pdfs; if (!l || !l.length) return "";
-    return '<details class="lpdf"><summary>ملف لكل محاضرة (' + l.length + ")</summary>" + l.map(function (x) {
-      return '<button type="button" class="pdf lp" data-pdf="' + esc(s.base + "_" + x.n) + '">' + esc(x.t) + '<span class="en">PDF · ' + mb(x.size) + "</span></button>";
-    }).join("") + "</details>";
+  // الكارت كله بيودّي لصفحة المادة (m.html)، و«افتح المادة» بيفتح الملف على طول
+  function card(s) {
+    var c = s.code.toLowerCase(), open = s.state === "open", page = "m.html?s=" + encodeURIComponent(s.base);
+    return '<section class="card course' + (open ? "" : " soon") + '" aria-labelledby="c-' + c + '" data-base="' + esc(s.base) + '">' +
+      '<a class="cover" href="' + page + '">' + (s.grp ? "" : '<span class="code en">' + esc(s.code) + "</span>") + '<h3 id="c-' + c + '">' + esc(s.name) + "</h3>" + meta(s) + "</a>" +
+      (open ? '<p class="saved">افتحها مرة بالنت عشان تتحفظ</p><a class="go" href="c.html?s=' + encodeURIComponent(s.base) + '">افتح المادة</a>' +
+        '<a class="more" href="' + page + '">الملفات والملاعب</a>'
+        : '<p class="saved">قريباً</p>') + "</section>";
   }
   // المواد الخاصة (s.grp، بكود): كل مجموعة تحت عنوانها، ومواد الدفعة تحت «مواد الذكاء الاصطناعي». ومن غير كود: زي الأول بالظبط.
   function groups() { try { var g = JSON.parse(get("mst-groups")); if (g && g.length) return g; } catch (e) {} return []; }
@@ -72,6 +73,9 @@
     }).catch(function () {});
   }
   pullSubjects();
+  fetch("data/courses.json", { cache: "no-cache" }).then(function (r) { return r.json(); }).then(function (j) {
+    var t = JSON.stringify(j); if (t !== get("mst-cinfo")) { set("mst-cinfo", t); draw(); }
+  }).catch(function () {});
 
   // ---------- كود مادة خاصة (مثلاً مواد الهندسة) ----------
   // اللينك ممكن يبقى فيه الكود (?code=...): بيتحفظ، ويتبعت أول ما يبقى فيه اسم وتصريح (حتى لو سجّل بعدين)
@@ -100,25 +104,7 @@
   });
   }
 
-  // ملف الطباعة: بيتجاب بالتصريح، وبيتحفظ على الجهاز، وبعدين ينزل
-  document.addEventListener("click", function (e) {
-    var b = e.target.closest && e.target.closest("[data-pdf]"); if (!b || document.documentElement.classList.contains("gate")) return;
-    var base = b.getAttribute("data-pdf"), url = EP + "/file/" + base + ".pdf", lab = b.firstChild, old = lab.textContent;
-    function done(blob) { lab.textContent = old; b.disabled = false; var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = base + ".pdf"; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 60000); }
-    function fail(m) { lab.textContent = m; b.disabled = false; setTimeout(function () { lab.textContent = old; }, 4000); }
-    b.disabled = true; lab.textContent = "بينزّل...";
-    (window.caches ? caches.open(CONTENT).then(function (c) { return c.match(url); }) : Promise.resolve(null)).then(function (hit) {
-      if (hit && navigator.onLine === false) return hit.blob().then(done);
-      return A.ensure().then(function (tok) {
-        return fetch(url, { headers: { "X-Tok": tok }, cache: "no-store" });
-      }).then(function (r) {
-        if (r.ok) { if (window.caches) { var cp = r.clone(); caches.open(CONTENT).then(function (c) { return c.put(url, cp); }).catch(function () {}); } return r.blob().then(done); }
-        if (r.status === 401) { try { localStorage.removeItem("mst-tok"); } catch (_) {} }
-        if (r.status === 403) return r.json().then(function (j) { fail(j.err === "blocked" ? "الوصول مقفول" : "مقفولة"); });
-        throw new Error();
-      }).catch(function () { if (hit) return hit.blob().then(done); fail("مفيش نت"); });
-    });
-  });
+  // ملف الطباعة: pdf.js (مشترك مع صفحة المادة)
 
   // ---------- حسابك على أكتر من جهاز ----------
   function ago(t) {

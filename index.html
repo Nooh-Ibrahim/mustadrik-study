@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>الملفات الدراسية · مُستدرِك</title>
 <meta name="description" content="الملفات الدراسية لدفعة 2030، كلية الذكاء الاصطناعي، جامعة الدلتا. من مُستدرِك.">
-<meta name="hub-version" content="6">
+<meta name="hub-version" content="13">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
@@ -22,14 +22,19 @@ try{if(!localStorage.getItem("mst-name"))document.documentElement.classList.add(
 </head>
 <body>
 <div class="wrap">
-<div class="top"><button type="button" class="theme" id="theme">الوضع الغامق</button></div>
+<nav class="top topnav" aria-label="الموقع">
+  <a class="brand" href="./"><svg class="chip" viewBox="0 0 96 96" aria-hidden="true"><g class="pins" stroke-width="4.5" stroke-linecap="round"><path d="M30 6v12M42 6v12M54 6v12M66 6v12M30 78v12M42 78v12M54 78v12M66 78v12M6 30h12M6 42h12M6 54h12M6 66h12M78 30h12M78 42h12M78 54h12M78 66h12"/></g><rect class="die" x="18" y="18" width="60" height="60" rx="11"/><g class="meem" transform="translate(26 26) scale(1.375)" fill="none" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 16a7 7 0 1 0-7 7"/><path d="M16 21a5 5 0 1 0-5-5"/><path d="M23 16v8"/></g></svg><span>الملفات الدراسية</span></a>
+  <a class="nbtn" href="key.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M12.2 12H21M17.5 12v3.2M20.5 12v2.4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span>دليل الرموز</span></a>
+  <a class="nbtn" href="account.html" id="nav-me"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.2" r="3.8" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M4.5 20.2c.9-3.6 3.9-5.6 7.5-5.6s6.6 2 7.5 5.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span>حسابك</span></a>
+  <button type="button" class="nbtn ic" id="theme" aria-label="الوضع الغامق"></button>
+</nav>
 
 <header class="hero">
-  <svg class="chip" viewBox="0 0 96 96" role="img" aria-label="شعار الملفات الدراسية: ميم مُستدرِك جوّه شريحة"><g class="pins" stroke-width="4.5" stroke-linecap="round"><path d="M30 6v12M42 6v12M54 6v12M66 6v12M30 78v12M42 78v12M54 78v12M66 78v12M6 30h12M6 42h12M6 54h12M6 66h12M78 30h12M78 42h12M78 54h12M78 66h12"/></g><rect class="die" x="18" y="18" width="60" height="60" rx="11"/><g class="meem" transform="translate(26 26) scale(1.375)" fill="none" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 16a7 7 0 1 0-7 7"/><path d="M16 21a5 5 0 1 0-5-5"/><path d="M23 16v8"/></g></svg>
+  <img class="seal-hero" src="icons/seal.svg" width="200" height="200" alt="ختم دفعة 2030: كلية الذكاء الاصطناعي، جامعة الدلتا. الحلقة اللي حواليه: 8 ترمات، وإحنا في الترم الأول">
   <h1>الملفات الدراسية</h1>
   <span class="by">من مُستدرِك</span>
   <p class="sub">دفعة 2030 · كلية الذكاء الاصطناعي · جامعة الدلتا</p>
-  <p class="hello" id="hello" hidden>أهلاً يا <b id="hello-name"></b> <button type="button" class="linkbtn" id="edit-who">تعديل</button></p>
+  <p class="hello" id="hello" hidden>أهلاً يا <b id="hello-name"></b> <a class="linkbtn" href="account.html">حسابك</a> <button type="button" class="linkbtn" id="edit-who">تعديل الاسم</button></p>
 </header>
 
 <p class="offline" id="offline">✓ الموقع اتحفظ على جهازك، وبيفتح من غير نت. وكل مادة بتتحفظ أول ما تفتحها.</p>
@@ -54,17 +59,20 @@ try{if(!localStorage.getItem("mst-name"))document.documentElement.classList.add(
   <p class="fine"><b>الاسم</b> عشان نرحّب بيك، وبيتكتب على نسخة المواد اللي بتفتحها.<br><b>والرقم</b> عشان توصلك التحديثات، ونتأكد إنك معانا في الجروب، فيفضل وصولك للمحتوى شغّال.</p>
 </section>
 
+<div class="home-grid">
 <section class="card guide" aria-labelledby="g-h">
-  <div class="txt"><h2 id="g-h">أول مرة هنا؟</h2><p>الموقع ده إيه، والفرق بين الملفات، وإزاي يشتغل من غير نت، في 3 صفحات.</p></div>
-  <a href="guide.html">افتح الشرح</a>
+  <div class="txt"><h2 id="g-h">أول مرة هنا؟</h2><p>الموقع ده إيه، وإزاي يشتغل من غير نت، في 3 صفحات. ومعنى كل رمز في <a class="inl" href="key.html">دليل الرموز</a>.</p></div>
+  <a class="gbtn" href="guide.html">افتح الشرح</a>
 </section>
 
+<div class="cblock">
 <h2 class="sec sec-c" id="courses-h">المواد</h2>
 <div class="courses" id="courses"></div>
 <div id="gcourses"></div>
 <div class="gcode"><button type="button" class="linkbtn" id="g-open">عندي كود مادة</button>
   <form id="g-box" class="row" hidden novalidate><label>الكود<input id="g-code" type="text" dir="ltr" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="24" placeholder="ABC-12345"></label><button type="submit" class="btn">افتح</button></form>
   <p class="fine" id="g-msg" aria-live="polite"></p></div>
+</div>
 
 <section class="card acc" id="acc" aria-labelledby="acc-h">
   <h2 id="acc-h">حسابك على أكتر من جهاز</h2>
@@ -80,15 +88,7 @@ try{if(!localStorage.getItem("mst-name"))document.documentElement.classList.add(
   </details>
 </section>
 
-<section class="mytime" id="mytime" aria-labelledby="t-h" hidden>
-  <div class="th"><h2 class="sec" id="t-h">وقتي</h2><span class="seg"><button type="button" data-range="7" aria-pressed="true">أسبوع</button><button type="button" data-range="30" aria-pressed="false">شهر</button></span></div>
-  <div class="tk"><div class="card"><b id="t-today"></b><span>النهاردة</span></div><div class="card"><b id="t-range"></b><span id="t-range-l"></span></div><div class="card"><b id="t-all"></b><span>من الأول</span></div></div>
-  <div class="tgrid">
-    <div class="card"><h3>كل يوم</h3><div class="tchart" id="t-chart"></div></div>
-    <div class="card"><h3>كل مادة</h3><div id="t-per"></div></div>
-  </div>
-</section>
-
+<div class="howb">
 <h2 class="sec">قبل ما تبدأ</h2>
 <div class="how">
 <section class="card" aria-labelledby="h-add">
@@ -120,52 +120,34 @@ try{if(!localStorage.getItem("mst-name"))document.documentElement.classList.add(
   <p class="note">بعدها التقدّم بيتحفظ على حسابك، وبيوصل لأي جهاز تربطه.</p>
 </section>
 </div>
+</div>
+</div>
 </main>
 
 <footer class="credit" aria-labelledby="cr-h">
-  <img class="seal" src="icons/seal-ai.webp" width="120" height="120" alt="ختم دفعة 2030: كلية الذكاء الاصطناعي، جامعة الدلتا">
-  <h2 id="cr-h">إعداد: نـوح</h2>
+  <svg class="chip chip-f" viewBox="0 0 96 96" role="img" aria-label="شعار الملفات الدراسية: ميم مُستدرِك جوّه شريحة"><g class="pins" stroke-width="4.5" stroke-linecap="round"><path d="M30 6v12M42 6v12M54 6v12M66 6v12M30 78v12M42 78v12M54 78v12M66 78v12M6 30h12M6 42h12M6 54h12M6 66h12M78 30h12M78 42h12M78 54h12M78 66h12"/></g><rect class="die" x="18" y="18" width="60" height="60" rx="11"/><g class="meem" transform="translate(26 26) scale(1.375)" fill="none" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 16a7 7 0 1 0-7 7"/><path d="M16 21a5 5 0 1 0-5-5"/><path d="M23 16v8"/></g></svg>
+  <h2 id="cr-h">من نوح</h2>
   <p>لو لقيت غلط أو عندك اقتراح، كلّمني:</p>
   <div class="socs"><a class="soc wa" href="https://wa.me/201114232172" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2A9.8 9.8 0 0 0 3.6 17l-1.3 4.8 4.9-1.3A9.8 9.8 0 1 0 12 2.2Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.6 7.4c.3-.6.6-.6.9-.6h.6c.2 0 .4.1.5.4l.8 1.9c.1.2 0 .5-.1.7l-.6.7c.6 1.2 1.6 2.2 2.8 2.8l.7-.6c.2-.2.5-.2.7-.1l1.9.8c.3.1.4.3.4.6v.6c0 .4-.1.7-.6.9-1.2.6-3 .3-4.8-1.1a9.7 9.7 0 0 1-3.2-3.9c-.6-1.4-.6-2.4 0-3.1Z" fill="currentColor"/></svg><span>WhatsApp</span></a><a class="soc ig" href="https://www.instagram.com/nooh.m.ibrahim/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor"/></svg><span>Instagram</span></a><a class="soc fb" href="https://www.facebook.com/profile.php?id=61594278003270" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.6 21v-7.6h2.6l.4-3h-3V8.5c0-.9.3-1.5 1.5-1.5h1.6V4.3a21 21 0 0 0-2.3-.1c-2.3 0-3.9 1.4-3.9 4v2.2H8v3h2.5V21Z" fill="currentColor"/></svg><span>Facebook</span></a><a class="soc li" href="https://www.linkedin.com/in/nooh-m-ibrahim/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7.3 10v7M7.3 7v.01M11 17v-7M11 13c0-1.8 1-3 2.6-3S16.7 11 16.7 13v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>LinkedIn</span></a><a class="soc gh" href="https://github.com/Nooh-Ibrahim" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5a9.5 9.5 0 0 0-3 18.5c.5.1.7-.2.7-.5v-1.7c-2.6.6-3.2-1.2-3.2-1.2-.4-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.3-2.1-.2-4.3-1-4.3-4.7 0-1 .4-1.9 1-2.6-.1-.2-.4-1.2.1-2.5 0 0 .8-.3 2.6 1a9 9 0 0 1 4.8 0c1.8-1.3 2.6-1 2.6-1 .5 1.3.2 2.3.1 2.5.6.7 1 1.6 1 2.6 0 3.7-2.2 4.5-4.3 4.7.3.3.6.9.6 1.8v2.6c0 .3.2.6.7.5A9.5 9.5 0 0 0 12 2.5Z" fill="currentColor"/></svg><span>GitHub</span></a></div>
-  <p class="ver" id="ver">إصدار الموقع: 12</p>
+  <p class="ver" id="ver">إصدار الموقع: 13</p>
 </footer>
 </div>
 
+<script src="ui.js"></script>
 <script>
-(function () {
-  "use strict";
-  var root = document.documentElement, btn = document.getElementById("theme");
-  function isDark() {
-    var t = root.getAttribute("data-theme");
-    return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-  }
-  function label() { btn.textContent = isDark() ? "الوضع الفاتح" : "الوضع الغامق"; }
-  btn.addEventListener("click", function () {
-    var t = isDark() ? "light" : "dark";
-    root.setAttribute("data-theme", t);
-    try { localStorage.setItem("hub-theme", t); } catch (e) {}
-    label();
+// الرسالة بتظهر لما الصفحة الرئيسية تتحفظ (المواد: home.js)
+(function check(n) {
+  if (!window.caches) return;
+  caches.match("./").then(function (r) {
+    if (r) document.getElementById("offline").classList.add("on");
+    else if (n < 20) setTimeout(function () { check(n + 1); }, 1500);
   });
-  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", label);
-  label();
-
-  // الشغل من غير نت: الـ Service Worker على الموقع كله.
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("sw.js", { scope: "./" }).catch(function (e) { console.warn("sw:", e); });
-    navigator.serviceWorker.ready.then(function () { return check(0); });
-  }
-  function check(n) {
-    // الرسالة بتظهر لما الصفحة الرئيسية تتحفظ (المواد: home.js)
-    return caches.match("./").then(function (r) {
-      if (r) document.getElementById("offline").classList.add("on");
-      else if (n < 20) setTimeout(function () { check(n + 1); }, 1500);
-    });
-  }
-})();
+})(0);
 </script>
 <script src="stats.js" data-page="home" defer></script>
 <script src="acct.js" defer></script>
 <script src="me.js" defer></script>
 <script src="home.js" defer></script>
+<script src="pdf.js" defer></script>
 </body>
 </html>

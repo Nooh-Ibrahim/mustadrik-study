@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>حسابك · الملفات الدراسية</title>
+<meta name="description" content="اسمك ورقمك، ووقت مذاكرتك، وتقدّمك في كل مادة.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="الملفات الدراسية">
+<meta name="theme-color" content="#F7F3EA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1530" media="(prefers-color-scheme: dark)">
+<script>try{var t=localStorage.getItem("hub-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div class="wrap">
+<nav class="top topnav" aria-label="الموقع">
+  <a class="brand" href="./"><svg class="chip" viewBox="0 0 96 96" aria-hidden="true"><g class="pins" stroke-width="4.5" stroke-linecap="round"><path d="M30 6v12M42 6v12M54 6v12M66 6v12M30 78v12M42 78v12M54 78v12M66 78v12M6 30h12M6 42h12M6 54h12M6 66h12M78 30h12M78 42h12M78 54h12M78 66h12"/></g><rect class="die" x="18" y="18" width="60" height="60" rx="11"/><g class="meem" transform="translate(26 26) scale(1.375)" fill="none" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 16a7 7 0 1 0-7 7"/><path d="M16 21a5 5 0 1 0-5-5"/><path d="M23 16v8"/></g></svg><span>الملفات الدراسية</span></a>
+  <a class="nbtn" href="key.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M12.2 12H21M17.5 12v3.2M20.5 12v2.4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span>دليل الرموز</span></a>
+  <a class="nbtn" href="account.html" aria-current="page" id="nav-me"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.2" r="3.8" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M4.5 20.2c.9-3.6 3.9-5.6 7.5-5.6s6.6 2 7.5 5.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span>حسابك</span></a>
+  <button type="button" class="nbtn ic" id="theme" aria-label="الوضع الغامق"></button>
+</nav>
+<main>
+<section class="card prof" aria-labelledby="p-name">
+  <div class="avatar" id="p-av" aria-hidden="true"></div>
+  <div class="pinfo">
+    <h1 id="p-name">حسابك</h1>
+    <p class="ph" id="p-phone"></p>
+    <p class="since" id="p-since"></p>
+  </div>
+  <div class="acts"><a class="btn quiet" href="./?edit=1" id="p-edit" style="display:inline-flex;align-items:center;text-decoration:none">عدّل الاسم أو الرقم</a></div>
+</section>
+<p class="srvmsg" id="srv" aria-live="polite"></p>
+
+<section class="card who" id="p-gate" hidden>
+  <h2>لسه ماسجّلتش</h2>
+  <p>سجّل اسمك ورقمك من الصفحة الرئيسية الأول، وبعدها هتلاقي هنا وقتك وتقدّمك في كل مادة.</p>
+  <div class="row" style="margin-top:.7rem"><a class="btn" href="./#who" style="display:inline-flex;align-items:center;text-decoration:none">سجّل دلوقتي</a></div>
+</section>
+
+<div class="agrid" id="p-body">
+<div class="amain">
+  <h2 class="sec">تقدّمك في الأسئلة</h2>
+  <div class="atiles" id="p-tiles"></div>
+  <div class="clist" id="p-courses" style="margin-top:.8rem"></div>
+  <p class="try">الأرقام دي من الأسئلة اللي حلّيتها جوّه المواد. «صح آخر مرة» يعني آخر مرة جاوبت فيها السؤال كانت صح.</p>
+
+  <section class="mytime" id="mytime" aria-labelledby="t-h" hidden>
+    <div class="th"><h2 class="sec" id="t-h">وقت مذاكرتك</h2><span class="seg"><button type="button" data-range="7" aria-pressed="true">أسبوع</button><button type="button" data-range="30" aria-pressed="false">شهر</button></span></div>
+    <div class="tk"><div class="card"><b id="t-today"></b><span>النهاردة</span></div><div class="card"><b id="t-range"></b><span id="t-range-l"></span></div><div class="card"><b id="t-all"></b><span>من الأول</span></div></div>
+    <div class="tgrid">
+      <div class="card"><h3>كل يوم</h3><div class="tchart" id="t-chart"></div></div>
+      <div class="card"><h3>كل مادة</h3><div id="t-per"></div></div>
+    </div>
+  </section>
+  <p class="empty" id="t-none" hidden>لسه مفيش وقت مذاكرة متسجّل. افتح أي مادة وذاكر، والوقت هيظهر هنا.</p>
+
+  <section id="w-sec" hidden>
+    <h2 class="sec">أسئلة غلطت فيها</h2>
+    <p class="lead">آخر الأسئلة اللي غلطت فيها ولو مرة. والمكتوب عليه «اتصلّحت»، آخر إجابة ليك فيه كانت صح.</p>
+    <ul class="wlist" id="w-list"></ul>
+  </section>
+</div>
+<aside class="aside2">
+  <section id="s-sec" hidden>
+    <h2 class="sec">آخر مرات ذاكرت فيها</h2>
+    <div class="sess" id="s-list"></div>
+  </section>
+  <section>
+    <h2 class="sec">أجهزتك</h2>
+    <ul class="devs" id="d-list"></ul>
+    <p class="try">بتذاكر على أكتر من جهاز؟ <a class="inl" href="./#acc">اربط الجهاز التاني</a> عشان تقدّمك ووقتك يتجمعوا هنا.</p>
+  </section>
+</aside>
+</div>
+</main>
+<footer class="credit">
+  <svg class="chip chip-f" viewBox="0 0 96 96" aria-hidden="true"><g class="pins" stroke-width="4.5" stroke-linecap="round"><path d="M30 6v12M42 6v12M54 6v12M66 6v12M30 78v12M42 78v12M54 78v12M66 78v12M6 30h12M6 42h12M6 54h12M6 66h12M78 30h12M78 42h12M78 54h12M78 66h12"/></g><rect class="die" x="18" y="18" width="60" height="60" rx="11"/><g class="meem" transform="translate(26 26) scale(1.375)" fill="none" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 16a7 7 0 1 0-7 7"/><path d="M16 21a5 5 0 1 0-5-5"/><path d="M23 16v8"/></g></svg>
+  <h2>من نوح</h2>
+  <p>لو لقيت غلط أو عندك اقتراح: <a class="inl" href="https://wa.me/201114232172" target="_blank" rel="noopener">كلّمني على واتساب</a></p>
+</footer>
+</div>
+<script src="ui.js"></script>
+<script src="stats.js" data-page="home" defer></script>
+<script src="acct.js" defer></script>
+<script src="mytime.js" defer></script>
+<script src="account.js" defer></script>
+</body>
+</html>

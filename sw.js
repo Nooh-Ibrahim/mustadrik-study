@@ -3,13 +3,13 @@
 // - كل مادة (وملف الطباعة بتاعها) بتتحفظ أول ما تتفتح بالنت، في حفظ ثابت (CONTENT) مابيتمسحش مع الإصدارات،
 //   عشان محدش ينزّل كل المواد مرة واحدة، وعشان التحديث مايمسحش المواد المحفوظة.
 // - صفحات الـ HTML: من النت الأول (عشان التحديث يوصل)، ولو مفيش نت من المحفوظ.
-// - الباقي (PDF، وأيقونات، وخطوط): من المحفوظ الأول.
+// - الباقي (PDF، وأيقونات، وخطوط، وصور الملاعب ودليل الرموز img/): من المحفوظ الأول، وبيتحفظ أول ما يتفتح.
 // - من الإصدار 5 المواد مابقتش على GitHub: c.html بيجيبها من السيرفر بالتصريح وبيحفظها في CONTENT بنفسه
 //   (باسم السيرفر). النسخ القديمة (courses/) بتفضل لحد ما الجديدة تتحفظ، وبعدها c.html بيمسحها.
 // - مابيلمسش localStorage خالص، فالتقدّم بتاع المواد بيفضل زي ما هو.
 // الأسامي فيها mustadrak-study لأن كل مواقع nooh-ibrahim.github.io بتتشارك نفس المخزن.
 // (الموقع اتنقل لـ /mustadrik-study/ في الإصدار 6، والأسامي فضلت زي ما هي عشان المواد المحفوظة على الأجهزة تفضل.)
-const VERSION = 12;
+const VERSION = 13;
 const PREFIX = "mustadrak-study-";
 const SHELL = PREFIX + "v" + VERSION;
 const CONTENT = PREFIX + "content";
@@ -22,6 +22,15 @@ const FILES = [
   "acct.js",
   "home.js",
   "c.html",
+  "m.html",
+  "key.html",
+  "account.html",
+  "ui.js",
+  "pdf.js",
+  "course.js",
+  "account.js",
+  "mytime.js",
+  "data/courses.json",
   "guide.html",
   "guide.pdf",
   "manifest.webmanifest",
@@ -29,7 +38,7 @@ const FILES = [
   "icons/icon-192.png",
   "icons/icon-512.png",
   "icons/icon-maskable-512.png",
-  "icons/seal-ai.webp",
+  "icons/seal.svg",
   "fonts/plex-ar-400.woff2",
   "fonts/plex-ar-700.woff2",
   "fonts/plex-lat-400.woff2",
@@ -62,9 +71,9 @@ self.addEventListener("activate", (e) => {
   e.waitUntil(cleanup().then(() => self.clients.claim()));
 });
 
-// الصفحات وملفات الـ JS والـ CSS من النت الأول (عشان أي تعديل يوصل)، والباقي من المحفوظ الأول.
+// الصفحات وملفات الـ JS والـ CSS والـ JSON (data/courses.json) من النت الأول (عشان أي تعديل يوصل)، والباقي من المحفوظ الأول.
 function isPage(req) {
-  return req.mode === "navigate" || (req.headers.get("accept") || "").includes("text/html") || /\.(js|css)$/.test(new URL(req.url).pathname);
+  return req.mode === "navigate" || (req.headers.get("accept") || "").includes("text/html") || /\.(js|css|json)$/.test(new URL(req.url).pathname);
 }
 function cacheFor(url) {
   return caches.open(/\/(courses|pdfs)\//.test(url) ? CONTENT : SHELL);

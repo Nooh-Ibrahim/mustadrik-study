@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>المادة · الملفات الدراسية</title>
+<meta name="description" content="صفحة المادة: افتح ملف المذاكرة، ونزّل ملفات الطباعة، وشوف الملاعب والمحاضرات.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="الملفات الدراسية">
+<meta name="theme-color" content="#F7F3EA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B1530" media="(prefers-color-scheme: dark)">
+<script>try{var t=localStorage.getItem("hub-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div class="wrap">
+<nav class="top topnav" aria-label="الموقع">
+  <a class="brand" href="./"><svg class="chip" viewBox="0 0 96 96" aria-hidden="true"><g class="pins" stroke-width="4.5" stroke-linecap="round"><path d="M30 6v12M42 6v12M54 6v12M66 6v12M30 78v12M42 78v12M54 78v12M66 78v12M6 30h12M6 42h12M6 54h12M6 66h12M78 30h12M78 42h12M78 54h12M78 66h12"/></g><rect class="die" x="18" y="18" width="60" height="60" rx="11"/><g class="meem" transform="translate(26 26) scale(1.375)" fill="none" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 16a7 7 0 1 0-7 7"/><path d="M16 21a5 5 0 1 0-5-5"/><path d="M23 16v8"/></g></svg><span>الملفات الدراسية</span></a>
+  <a class="nbtn" href="key.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M12.2 12H21M17.5 12v3.2M20.5 12v2.4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span>دليل الرموز</span></a>
+  <a class="nbtn" href="account.html" id="nav-me"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.2" r="3.8" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M4.5 20.2c.9-3.6 3.9-5.6 7.5-5.6s6.6 2 7.5 5.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span>حسابك</span></a>
+  <button type="button" class="nbtn ic" id="theme" aria-label="الوضع الغامق"></button>
+</nav>
+<p class="crumb"><a href="./">المواد</a> ← <span id="crumb-name"></span></p>
+<header class="chero">
+  <span class="ccode" id="c-code"></span>
+  <h1 id="c-name"></h1>
+  <p class="cen" id="c-en" lang="en"></p>
+  <p class="ver" id="c-ver"></p>
+  <div class="acts">
+    <a class="bigbtn" id="c-open" href="./"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h9.5L19 9v10.5H5z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M10 11l4 2.5-4 2.5z" fill="currentColor"/></svg>افتح المادة</a>
+    <button type="button" class="bigbtn ghost" id="c-pdf-top" hidden><span data-pl>نزّل الـ PDF كامل</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10.5l5 5 5-5M5 19.5h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <p class="saved" id="c-soon" hidden>قريباً</p>
+  </div>
+  <p class="saved" id="c-saved"></p>
+  <div class="stiles" id="c-tiles"></div>
+</header>
+
+<div class="cgrid">
+<aside class="cside">
+  <section id="pdf-sec" aria-labelledby="pdf-h" hidden>
+    <h2 class="sec" id="pdf-h">ملفات الطباعة (PDF)</h2>
+    <p class="lead">ملف المادة كلها، وملف لوحده لكل محاضرة لو عايز تطبع حتة بس. الملفات بتنزل من هنا بس، ومرة ما تنزل بتفضل على جهازك.</p>
+    <div class="pdfs" id="c-pdfs"></div>
+  </section>
+</aside>
+<div class="cmain">
+  <section id="lab-sec" aria-labelledby="lab-h" hidden>
+    <h2 class="sec" id="lab-h">ملاعب المادة</h2>
+    <p class="lead" id="lab-lead"></p>
+    <div class="labs" id="labs-star"></div>
+    <details class="labmore" id="lab-more"><summary>باقي الملاعب (<span id="lab-more-n"></span>)</summary><div class="labs small" id="labs-rest"></div></details>
+    <p class="try">الملاعب جوّه الدروس نفسها: افتح المادة، وروح للدرس المكتوب تحت الصورة.</p>
+  </section>
+  <section id="lec-sec" aria-labelledby="lec-h" hidden>
+    <h2 class="sec" id="lec-h">المادة فيها إيه</h2>
+    <p class="lead">دوس على أي محاضرة تشوف دروسها.</p>
+    <div class="lecs" id="c-lecs"></div>
+  </section>
+  <section id="way-sec" aria-labelledby="way-h" hidden>
+    <h2 class="sec" id="way-h">طريقة الشرح</h2>
+    <p class="lede-q" id="c-lede"></p>
+    <div class="ways" id="c-ways"></div>
+    <p class="try">معنى كل رمز جوّه المادة (النجمة، والسهم في المعادلة، و«واثق»، والمحاكاة...) في <a class="inl" href="key.html">دليل الرموز</a>.</p>
+  </section>
+</div>
+</div>
+
+<dialog class="lbox" id="lbox" aria-label="صورة الملعب"><figure></figure><button type="button" class="btn x">اقفل</button></dialog>
+<footer class="credit">
+  <svg class="chip chip-f" viewBox="0 0 96 96" aria-hidden="true"><g class="pins" stroke-width="4.5" stroke-linecap="round"><path d="M30 6v12M42 6v12M54 6v12M66 6v12M30 78v12M42 78v12M54 78v12M66 78v12M6 30h12M6 42h12M6 54h12M6 66h12M78 30h12M78 42h12M78 54h12M78 66h12"/></g><rect class="die" x="18" y="18" width="60" height="60" rx="11"/><g class="meem" transform="translate(26 26) scale(1.375)" fill="none" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 16a7 7 0 1 0-7 7"/><path d="M16 21a5 5 0 1 0-5-5"/><path d="M23 16v8"/></g></svg>
+  <h2>من نوح</h2>
+  <p>لو لقيت غلط أو عندك اقتراح: <a class="inl" href="https://wa.me/201114232172" target="_blank" rel="noopener">كلّمني على واتساب</a></p>
+</footer>
+</div>
+<script src="ui.js"></script>
+<script src="stats.js" data-page="home" defer></script>
+<script src="acct.js" defer></script>
+<script src="pdf.js" defer></script>
+<script src="course.js" defer></script>
+</body>
+</html>
