@@ -9,7 +9,7 @@
 // - مابيلمسش localStorage خالص، فالتقدّم بتاع المواد بيفضل زي ما هو.
 // الأسامي فيها mustadrak-study لأن كل مواقع nooh-ibrahim.github.io بتتشارك نفس المخزن.
 // (الموقع اتنقل لـ /mustadrik-study/ في الإصدار 6، والأسامي فضلت زي ما هي عشان المواد المحفوظة على الأجهزة تفضل.)
-const VERSION = 13;
+const VERSION = 14;
 const PREFIX = "mustadrak-study-";
 const SHELL = PREFIX + "v" + VERSION;
 const CONTENT = PREFIX + "content";

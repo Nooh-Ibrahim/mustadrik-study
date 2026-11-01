@@ -10,7 +10,8 @@
   var $ = function (id) { return document.getElementById(id); };
   function get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
-  function day(t) { return new Date(t + 3 * 3600e3).toISOString().slice(0, 10); }
+  var CAIRO = (function () { try { return new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Cairo", year: "numeric", month: "2-digit", day: "2-digit" }); } catch (e) { return null; } })();
+  function day(t) { if (CAIRO) try { var o = {}; CAIRO.formatToParts(new Date(t)).forEach(function (x) { o[x.type] = x.value; }); if (o.year && o.month && o.day) return o.year + "-" + o.month + "-" + o.day; } catch (e) {} return new Date(t + 2 * 3600e3).toISOString().slice(0, 10); } // بتوقيت القاهرة (صيفي وشتوي)، زي السيرفر
   var DEMO = /demo=1/.test(location.search);
 
   // ---------- وقتي ----------

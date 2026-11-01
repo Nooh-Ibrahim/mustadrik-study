@@ -87,7 +87,14 @@
   }
   function labCard(c, l) {
     var where = l.plot ? "" : [lecName(c, l.lec), l.lesson].filter(Boolean).join(" · ");
-    return '<figure class="labc' + (l.star ? " star" : "") + '">' + (l.img ? img(l) : "") + '<figcaption class="lt"><h3>' + ar(l.t) + "</h3>" + (l.d ? "<p>" + ar(l.d) + "</p>" : "") + (where ? '<span class="where">' + ar(where) + "</span>" : "") + "</figcaption></figure>";
+    return '<figure class="labc' + (l.star ? " star" : "") + '">' + (l.img ? img(l) : "") + '<figcaption class="lt"><h3>' + ar(l.t) + "</h3>" + (l.d ? "<p>" + ar(l.d) + "</p>" : "") + (where ? '<span class="where">' + ar(where) + "</span>" : "") + labLink(l) + "</figcaption></figure>";
+  }
+  // لينك يفتح الملعب نفسه جوّه ملف المادة (المحرّك بيفهم #go=<الدرس>&lab=<الملعب>&n=<الكام>، جلسة الدمج 6)
+  function labLink(l) {
+    if (!l.key || ($("c-open") && $("c-open").hidden)) return "";
+    var h = "#go=" + encodeURIComponent(l.key);
+    if (!l.plot && l.raw) { var n = l.id.slice(l.raw.length); h += "&lab=" + encodeURIComponent(l.raw) + (/^\d+$/.test(n) ? "&n=" + n : ""); }
+    return '<a class="labgo" href="c.html?s=' + encodeURIComponent(base) + h + '">' + (l.plot ? "افتح الرسمة في المادة ←" : "افتح الملعب ←") + "</a>";
   }
   var ALL = [];
   function labs(c) {

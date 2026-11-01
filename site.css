@@ -423,3 +423,6 @@ bdi.ent{direction:ltr;unicode-bidi:isolate}
 [hidden]{display:none!important}
 .gcode label{flex:1 1 10rem;min-width:0}.gcode input{min-width:0;width:100%}
 .ses{grid-template-columns:auto minmax(0,1fr) auto}
+
+/* لينك «افتح الملعب» تحت كل ملعب (جلسة الدمج 6) */
+.labc .labgo{align-self:flex-start;margin-top:.35rem;font-weight:800;color:var(--ink);text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:.25em;min-height:2.4rem;display:inline-flex;align-items:center}
