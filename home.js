@@ -48,7 +48,22 @@
     if ($("gcourses")) $("gcourses").innerHTML = G.map(function (g) {
       return '<h2 class="sec">' + esc(g.name) + '</h2><div class="courses">' + l.filter(function (s) { return s.grp === g.grp; }).map(card).join("") + "</div>";
     }).join("");
+    news();
     saved();
+  }
+  // كارت «جديد في المواد» (جلسة الدمج 2026-11-09، طلب نوح): البنود العلمية من سجل التحديثات (news في data/courses.json، آخر أسبوعين)
+  var MON = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+  function arDate(d) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d || ""); return m ? (+m[3]) + " " + MON[+m[2] - 1] : ""; }
+  function news() {
+    var C = info().courses || {}, rows = [], box = $("news"), h = $("courses-h");
+    list().forEach(function (s) {
+      var c = C[s.base]; if (s.state !== "open" || !c || !c.news || !c.news.length) return;
+      rows.push('<div class="nw"><a class="nwh" href="c.html?s=' + encodeURIComponent(s.base) + '">' + esc(s.name) + "</a><ul>" + c.news.map(function (x) { return "<li>" + esc(x.t) + (arDate(x.date) ? " <small>" + arDate(x.date) + "</small>" : "") + "</li>"; }).join("") + "</ul></div>");
+    });
+    if (!box && h) { box = document.createElement("section"); box.id = "news"; box.className = "card news"; box.setAttribute("aria-labelledby", "news-h"); h.parentNode.insertBefore(box, h); }
+    if (!box) return;
+    box.hidden = !rows.length;
+    box.innerHTML = rows.length ? '<h2 id="news-h">جديد في المواد</h2><p class="fine">اللي اتضاف أو اتصلّح في الشرح والأسئلة آخر أسبوعين. جوّه المادة هتلاقي نقطة حمرا جنب الدرس اللي فيه الجديد.</p>' + rows.join("") : "";
   }
   // كل كارت بيقول مادته محفوظة على الجهاز ولا لأ
   function saved() {

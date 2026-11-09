@@ -74,6 +74,8 @@ for (const c of COURSES) {
     code: cfg.code, key: cfg.key, ar: d.h1, en: d.en, lede: d.lede, ver: cl[0] ? { v: cl[0].v, date: cl[0].date } : null,
     counts: { lessons: d.lessons, q: d.q, mcq: d.mcq, labs: labs.length, plots: d.plots },
     lectures: d.lectures, labs, plots: extra,
+    // كارت «جديد» في الرئيسية (جلسة الدمج 2026-11-09): البنود العلمية (type مش sys) من آخر 14 يوم، 4 بالكتير
+    news: cl.filter((e) => Date.now() - Date.parse(e.date) < 14 * 864e5).flatMap((e) => e.items.filter((x) => x && typeof x === "object" && x.type !== "sys").map((x) => ({ t: String(x.t || "").replace(/<[^>]+>/g, ""), date: e.date, lec: x.lec || "", key: x.key || "" }))).slice(0, 4),
   };
   console.log("✓", cfg.base, "دروس", d.lessons, "أسئلة", d.q, "ملاعب", labs.length);
 }

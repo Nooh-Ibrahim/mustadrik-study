@@ -61,6 +61,14 @@
   function noTime() { $("t-none").hidden = !$("mytime").hidden || !name; }
   setTimeout(noTime, 300); addEventListener("mst-time", function () { setTimeout(noTime, 1500); });
 
+  // نص السؤال جاي من المادة بالكود: نشيل صندوق «المطلوب» ونحوّل الرياضة لنص عادي
+  function qclean(t) {
+    t = String(t || "").replace(/اضغط تشوف المطلوب بالعربي[؀-ۿ\s()،:.«»\-]*/g, " ");
+    for (var i = 0; i < 4; i++) t = t.replace(/~f\{([^{}]*)\}\{([^{}]*)\}/g, function (m, a, b) { var w = function (x) { return /[\s+\-−×·\/]/.test(x) ? "(" + x + ")" : x; }; return w(a) + "/" + w(b); })
+      .replace(/~n\{([^{}]*)\}\{([^{}]*)\}/g, "$1√($2)").replace(/~r\{([^{}]*)\}/g, "√($1)").replace(/~[ud]\{([^{}]*)\}/g, "$1")
+      .replace(/\^\{([^{}]*)\}/g, "^$1").replace(/_\{([^{}]*)\}/g, "_$1");
+    return t.replace(/\$/g, "").replace(/\s+/g, " ").replace(/\s+([.,:;])/g, "$1").trim();
+  }
   // ---------- من السيرفر (/me) ----------
   var DEV = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M10.5 18.5h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
   function server(j) {
@@ -82,7 +90,7 @@
     var w = (j.wrong || []).slice(0, 10);
     $("w-sec").hidden = !w.length;
     $("w-list").innerHTML = w.map(function (q) {
-      return "<li>" + (q.txt ? '<span class="wq" lang="en" dir="ltr">' + esc(q.txt) + "</span>" : "<b>سؤال <bdi dir=\"ltr\">" + esc(q.qid) + "</bdi></b>") +
+      return "<li>" + (q.txt ? '<span class="wq" lang="en" dir="ltr">' + esc(qclean(q.txt)) + "</span>" : "<b>سؤال <bdi dir=\"ltr\">" + esc(q.qid) + "</bdi></b>") +
         '<span class="wm">' + esc(sn(q.page)) + (q.lt ? " · " + esc(q.lt) : "") + " · غلطت فيه " + q.w + (q.w === 1 ? " مرة" : " مرات") + " · " +
         (q.fixed ? '<span class="fx">✓ اتصلّحت</span>' : '<span class="nf">لسه</span>') + "</span></li>";
     }).join("");

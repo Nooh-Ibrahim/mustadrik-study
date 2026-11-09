@@ -426,3 +426,9 @@ bdi.ent{direction:ltr;unicode-bidi:isolate}
 
 /* لينك «افتح الملعب» تحت كل ملعب (جلسة الدمج 6) */
 .labc .labgo{align-self:flex-start;margin-top:.35rem;font-weight:800;color:var(--ink);text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:.25em;min-height:2.4rem;display:inline-flex;align-items:center}
+/* كارت «جديد في المواد» (home.js، جلسة الدمج 2026-11-09) */
+.news{margin:1rem 0 .4rem;border-color:var(--gold)}
+.news .fine{font-size:.92rem;color:var(--muted);margin-bottom:.4rem}
+.news .nw{border-top:1px solid var(--rule);padding:.45rem 0 .2rem}
+.news .nwh{font-weight:700;color:var(--ink);text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:.25em}
+.news ul{margin:.25rem 0 0;padding-inline-start:1.2rem}.news li{margin:.2rem 0;line-height:1.6}.news li small{color:var(--muted)}

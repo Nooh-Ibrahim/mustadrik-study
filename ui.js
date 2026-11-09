@@ -29,5 +29,29 @@
   // «حسابك» في الشريط: الاسم الأول لو متسجّل
   var me = document.getElementById("nav-me");
   if (me && get("mst-name")) me.querySelector("span").textContent = String(get("mst-name")).trim().split(/\s+/)[0];
+  // ختم الدفعة: شرطة الترم الحالي بتزيد مع الأيام. الصورة بتتحط في الصفحة نفسها عشان النسبة تتحسب النهاردة (tools/seal.mjs)
+  var seals = document.querySelectorAll("img[src$=\"icons/seal.svg\"]");
+  if (seals.length && window.fetch) {
+    [].forEach.call(seals, function (im) { im.style.visibility = "hidden"; });
+    var show = function () { [].forEach.call(seals, function (im) { im.style.visibility = ""; }); };
+    setTimeout(show, 2500);
+    fetch("icons/seal.svg").then(function (r) { if (!r.ok) throw 0; return r.text(); }).then(function (t) {
+      [].forEach.call(seals, function (im) {
+        var box = document.createElement("div"); box.innerHTML = t;
+        var svg = box.querySelector("svg"); if (!svg || !im.parentNode) return;
+        var g = svg.querySelector("[data-ts]");
+        if (g) {
+          var ts = g.getAttribute("data-ts").split(","), a = +ts[0], b = +ts[1];
+          var p = Math.round(Math.min(1, Math.max(0.03, (Date.now() - a) / (b - a))) * 1000) / 10;
+          g.setAttribute("stroke-dasharray", p + " 200");
+          var an = g.querySelector("animate"); if (an) an.setAttribute("values", p + ";" + p + ";0");
+        }
+        svg.setAttribute("class", im.className); svg.setAttribute("width", im.getAttribute("width") || 200); svg.setAttribute("height", im.getAttribute("height") || 200);
+        if (im.getAttribute("style")) svg.setAttribute("style", im.getAttribute("style"));
+        svg.style.visibility = ""; svg.style.flex = "none"; svg.style.maxWidth = "100%";
+        im.parentNode.replaceChild(svg, im);
+      });
+    }).catch(function () {}).then(show);
+  }
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js", { scope: "./" }).catch(function (e) { console.warn("sw:", e); });
 })();
