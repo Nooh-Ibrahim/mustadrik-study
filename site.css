@@ -432,3 +432,61 @@ bdi.ent{direction:ltr;unicode-bidi:isolate}
 .news .nw{border-top:1px solid var(--rule);padding:.45rem 0 .2rem}
 .news .nwh{font-weight:700;color:var(--ink);text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:.25em}
 .news ul{margin:.25rem 0 0;padding-inline-start:1.2rem}.news li{margin:.2rem 0;line-height:1.6}.news li small{color:var(--muted)}
+
+/* ===== الرئيسية الجديدة (فابل 2، 2026-11-16): سطر واحد، و«كمّل»، والمواد. كارت المادة مكان دوس واحد ===== */
+.hero.slim{padding:.5rem 0 .8rem}
+.hero.slim h1{font-size:1.4rem;line-height:1.5}
+.hero.slim .sub{font-size:.95rem;margin-top:.1rem}
+.hero.slim .hello{margin-top:.2rem;font-size:1rem}
+@media (min-width:760px){.hero.slim{padding:1rem 0 1.2rem}.hero.slim h1{font-size:2rem}}
+.resume{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:0 .8rem;text-decoration:none;color:var(--ink);border-color:var(--gold);margin:0 0 .9rem;padding:.7rem 1rem}
+.resume[hidden],.reg[hidden]{display:none}
+.resume:hover{border-color:var(--gold-ink)}
+.resume .rk{grid-column:1;font-size:.92rem;font-weight:700;color:var(--gold-ink)}
+.resume .rn{grid-column:1;font-size:1.15rem;line-height:1.5}
+.resume .rl{grid-column:1;font-size:.98rem;color:var(--muted);line-height:1.5}
+.resume .rgo{grid-column:2;grid-row:1/span 3;display:inline-flex;align-items:center;min-height:2.9rem;padding:0 1.3rem;border-radius:.9rem;background:var(--acc);color:var(--on-acc);font-weight:700;font-size:1.1rem}
+.first{margin:0 0 .9rem}
+.fb{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.fb[hidden]{display:none}
+.fb button{font:inherit;min-height:3.6rem;border-radius:1rem;font-weight:700;font-size:1.08rem;line-height:1.4;cursor:pointer;padding:.35rem .5rem}
+.fb small{display:block;font-weight:400;font-size:.88rem}
+.fb .a{background:var(--acc);color:var(--on-acc);border:2px solid var(--acc)}
+.fb .b{background:var(--surface);color:var(--ink);border:2px solid var(--gold)}
+.fb button:hover{filter:brightness(1.08)}
+@media (min-width:760px){.first{max-width:40rem;margin-inline:auto}}
+.tour{border-color:var(--gold)}
+.tour .tn{font-size:.9rem;font-weight:700;color:var(--gold-ink)}
+.tour .tt{font-size:1.08rem;line-height:1.8;margin:.1rem 0 .6rem}
+.tour .row{display:flex;gap:.6rem;align-items:center}
+main>.sec-c{margin-top:.6rem}
+a.course{text-decoration:none;color:var(--ink);transition:border-color .15s,transform .15s}
+a.course:hover{border-color:var(--gold);transform:translateY(-2px)}
+.course .cmeta{display:block;margin:0 0 .55rem}
+.course .cst{margin-top:auto;font-size:.95rem;font-weight:700;color:var(--muted);line-height:1.5}
+.course .cst.new{align-self:flex-start;color:var(--on-acc);background:var(--acc);border-radius:.7rem;padding:.15rem 1.1rem;font-size:1rem}
+.course .cbar{display:block;height:.45rem;border-radius:1rem;background:var(--rule);overflow:hidden;margin-top:auto}
+.course .cbar+.cst{margin-top:.3rem}
+.course .cbar i{display:block;height:100%;background:var(--gold);border-radius:1rem}
+.course.sv .cmeta::after{content:" · ✓";color:var(--ok);font-weight:700}
+html.pick a.course{border-color:var(--gold)}
+.course.sel{outline:3px solid var(--gold);outline-offset:2px}
+.lplist{display:grid;grid-template-columns:1fr;gap:.5rem}
+@media (min-width:760px){.lplist{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.lp{display:flex;flex-direction:column;justify-content:center;min-height:3.2rem;padding:.45rem .9rem;border-radius:.9rem;border:2px solid var(--rule);background:var(--glass);color:var(--ink);text-decoration:none;line-height:1.55}
+.lp:hover{border-color:var(--gold)}
+.lp span{font-size:.9rem;font-weight:700;color:var(--ok)}
+.lp.lock span{color:var(--muted)}
+.reg{display:flex;align-items:center;gap:.5rem .8rem;flex-wrap:wrap;margin:1.2rem 0 0;border-color:var(--gold);padding:.7rem 1rem}
+.reg p{flex:1 1 14rem;font-weight:700;line-height:1.6}
+.hmsg:empty{display:none}.hmsg{text-align:center;margin:0 0 .6rem}
+.whyd{margin-top:.5rem}.whyd summary{cursor:pointer;font-size:.95rem;color:var(--muted);min-height:2.4rem;display:flex;align-items:center}
+.who .whyd .fine{margin-top:0}
+.hlinks{display:flex;flex-wrap:wrap;gap:0 1.1rem;justify-content:center;margin:1.5rem 0 0;font-size:1rem}
+.hlinks a,.hlinks button{color:var(--ink);font:inherit;background:none;border:0;padding:.2rem;text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:.3em;cursor:pointer;min-height:2.75rem;display:inline-flex;align-items:center}
+.gcode .row{display:flex;gap:.5rem;align-items:flex-end;justify-content:center;flex-wrap:wrap}.gcode .row[hidden]{display:none}.gcode .fine{text-align:center}
+main>.offline{margin-top:1rem}
+.seal-f{display:block;width:5.5rem;height:auto;aspect-ratio:1;margin:0 auto .7rem}
+.news summary{cursor:pointer;min-height:2.75rem;display:flex;align-items:center;gap:.5rem}.news summary::after{content:"▾";color:var(--gold-ink);margin-inline-start:auto}.news details[open] summary::after{content:"▴"}.news summary h2{font-size:1.1rem}.news summary::-webkit-details-marker{display:none}
+.news{padding-block:.4rem}
+.lp b i.dr{font-style:normal;font-size:.72rem;font-weight:700;border:1px solid var(--pen,#B42318);color:var(--pen,#B42318);border-radius:1rem;padding:.05rem .5rem;white-space:nowrap}

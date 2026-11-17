@@ -28,7 +28,8 @@ a{display:inline-block;margin-top:1rem;padding:.55rem 1.4rem;border-radius:1rem;
 <div id="m"><div class="sp" aria-hidden="true"></div><h1 id="h">بيفتح المادة…</h1><p id="p"></p></div>
 <script>
 // بيفتح ملف المادة بالتصريح (الملفات مش على GitHub، على السيرفر ومقفولة).
-// - من غير اسم ورقم: يرجع للصفحة الرئيسية يسجّل.
+// - من غير اسم ورقم (فابل 2): بيفتح نسخة «من غير حساب» (/trial/: أول وآخر محاضرة بس، من غير تصريح).
+//   لو المادة مالهاش نسخة (خاصة، أو لسه ماترفعتش): يرجع للصفحة الرئيسية يسجّل، وبعدها يرجع هنا (mst-next).
 // - الملف بيتحفظ على الجهاز (mustadrak-study-content)، وبيتجاب تاني بس لو اتغيّر (ETag)، فبيفتح من غير نت.
 // - المادة بتتكتب في نفس الصفحة (document.write)، فبتفضل على نفس الموقع ونفس التقدّم (localStorage).
 (function () {
@@ -40,13 +41,14 @@ a{display:inline-block;margin-top:1rem;padding:.55rem 1.4rem;border-radius:1rem;
   var H = document.getElementById("h"), P = document.getElementById("p");
   function msg(h, p, back) { document.querySelector(".sp").remove(); H.textContent = h; P.textContent = p || ""; if (back !== false) { var a = document.createElement("a"); a.href = "./"; a.textContent = "ارجع للصفحة الرئيسية"; document.getElementById("m").appendChild(a); } }
   if (!s) return msg("اللينك ناقص", "افتح المادة من الصفحة الرئيسية.");
-  if (!get("mst-name")) { location.replace("./#who"); return; }
-  var url = EP + "/file/" + s + ".html", old = new URL("courses/" + s + ".html", location.href).href, cache = null, cached = null;
+  var T = !get("mst-name"); // نسخة «من غير حساب»
+  function toReg() { try { sessionStorage.setItem("mst-next", "c.html?s=" + s + (/^#[A-Za-z0-9_=&%.-]*$/.test(location.hash) ? location.hash : "")); } catch (e) {} location.replace("./#who"); }
+  var url = EP + (T ? "/trial/" : "/file/") + s + ".html", old = new URL("courses/" + s + ".html", location.href).href, cache = null, cached = null;
   var old2 = location.origin + "/mustadrak-study/courses/" + s + ".html"; // من قبل ما اللينك يتغيّر (الإصدار 6)
   function show(html) { document.open(); document.write(html); document.close(); }
   function timeout(ms) { return new Promise(function (ok) { setTimeout(function () { ok("slow"); }, ms); }); }
   function load(tok) {
-    var h = { "X-Tok": tok }; if (cached && cached.url !== old && cached.url !== old2 && cached.headers.get("ETag")) h["If-None-Match"] = cached.headers.get("ETag");
+    var h = T ? {} : { "X-Tok": tok }; if (cached && cached.url !== old && cached.url !== old2 && cached.headers.get("ETag")) h["If-None-Match"] = cached.headers.get("ETag");
     return fetch(url, { headers: h, cache: "no-store" });
   }
   function fromCache() { return cached.text().then(show); }
@@ -70,10 +72,10 @@ a{display:inline-block;margin-top:1rem;padding:.55rem 1.4rem;border-radius:1rem;
     return step();
   }
   function offline() { if (cached) return fromCache(); msg("المادة دي لسه ماتحفظتش على جهازك", "افتحها مرة وإنت متوصل بالنت، وبعد كده هتفتح من غير نت."); }
-  (window.caches ? caches.open("mustadrak-study-content").then(function (c) { cache = c; return c.match(url).then(function (r) { return r || c.match(old, { ignoreSearch: true }); }).then(function (r) { return r || c.match(old2, { ignoreSearch: true }); }); }) : Promise.resolve(null)).then(function (r) {
+  (window.caches ? caches.open("mustadrak-study-content").then(function (c) { cache = c; return c.match(url).then(function (r) { return r || T ? r : c.match(old, { ignoreSearch: true }); }).then(function (r) { return r || T ? r : c.match(old2, { ignoreSearch: true }); }); }) : Promise.resolve(null)).then(function (r) {
     cached = r || null;
     if (navigator.onLine === false) return offline();
-    var go = window.MSTA.ensure().then(function (tok) {
+    var go = T ? load() : window.MSTA.ensure().then(function (tok) {
       return load(tok).then(function (res) {
         if (res.status !== 401) return res;
         try { localStorage.removeItem("mst-tok"); } catch (e) {}
@@ -91,6 +93,7 @@ a{display:inline-block;margin-top:1rem;padding:.55rem 1.4rem;border-radius:1rem;
         if (cached) return Promise.race([txt, timeout(8000)]).then(function (t) { return t === "slow" ? fromCache() : put.then(function () { show(t); }); });
         return Promise.all([put, txt]).then(function (r) { show(r[1]); });
       }
+      if (T && (res.status === 403 || res.status === 404)) return toReg(); // مالهاش نسخة من غير حساب: سجّل الأول
       if (res.status === 403) return res.json().then(function (j) {
         if (j.err === "blocked") msg("الوصول للملفات اتقفل لرقمك", "لو ده غلط، كلّم نوح.");
         else msg("المادة دي مقفولة دلوقتي", "هتفتح قريب إن شاء الله.");
@@ -100,7 +103,7 @@ a{display:inline-block;margin-top:1rem;padding:.55rem 1.4rem;border-radius:1rem;
     });
   }).catch(function (e) {
     if (e && e.message === "blocked") return msg("الوصول للملفات اتقفل لرقمك", "لو ده غلط، كلّم نوح.");
-    if (e && e.message === "noname") { location.replace("./#who"); return; }
+    if (e && e.message === "noname") { toReg(); return; }
     offline();
   });
 })();

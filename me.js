@@ -1,20 +1,38 @@
-// الصفحة الرئيسية: كارت الاسم، و«أهلاً يا …». («وقتي» اتنقل لصفحة «حسابك»: mytime.js)
+// الصفحة الرئيسية: كارت التسجيل (بيظهر عند الطلب بس: زرار «سجّل»، أو محاضرة مقفولة، أو ‎#who)، و«أهلاً يا …».
+// («وقتي» في صفحة «حسابك»: mytime.js)
 (function () {
   "use strict";
   var $ = function (id) { return document.getElementById(id); };
   function get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  // المكان اللي الطالب كان رايحه قبل التسجيل (محاضرة مقفولة): بيتفتح بعد ما يسجّل
+  function next(keep) { var n = null; try { n = sessionStorage.getItem("mst-next"); if (!keep) sessionStorage.removeItem("mst-next"); } catch (e) {} return n && /^c\.html\?s=[A-Za-z0-9_]+(#[A-Za-z0-9_=&%.-]*)?$/.test(n) ? n : null; }
 
-  // ---------- الاسم ----------
   function first(n) { return String(n || "").trim().split(/\s+/)[0] || ""; }
   function hello() {
     var n = get("mst-name");
     $("hello").hidden = !n;
     if (n) $("hello-name").textContent = first(n);
+    if ($("reg")) $("reg").hidden = !!n;
   }
-  function openWho(edit) {
+  // mode: "edit" تعديل اسم موجود، "lock" جاي من محاضرة مقفولة، ومن غيره تسجيل عادي
+  function openWho(mode) {
+    var edit = mode === "edit", why = $("who-why");
     $("who").hidden = false;
+    $("who-h").textContent = edit ? "عدّل اسمك أو رقمك" : "سجّل في 10 ثواني";
+    why.hidden = edit;
+    why.textContent = mode === "lock" ? "المحاضرة دي بتتفتح بحساب. سجّل مرة واحدة: تفتح كل المحاضرات، وتقدّمك يتحفظ على كل أجهزتك."
+      : "مرة واحدة بس: تفتح كل المحاضرات في كل المواد، وتقدّمك يتحفظ على كل أجهزتك.";
+    $("join-q").hidden = edit; if (edit) $("join").hidden = true;
+    $("who-form").querySelector("button[type=submit]").textContent = edit ? "حفظ" : "سجّل";
+    $("who-later").textContent = edit ? "إلغاء" : "مش دلوقتي";
     if (edit) { $("who-name").value = get("mst-name") || ""; $("who-phone").value = get("mst-phone") || ""; }
+    $("who").scrollIntoView({ behavior: "smooth", block: "center" });
+    setTimeout(function () { try { $("who-name").focus({ preventScroll: true }); } catch (e) {} }, 450);
+  }
+  function closeWho() {
+    $("who").hidden = true;
+    if (location.hash === "#who" || /[?&]edit=1/.test(location.search)) try { history.replaceState(null, "", location.pathname); } catch (e) {}
   }
   function saveWho(e) {
     e.preventDefault();
@@ -25,22 +43,26 @@
     if (!/^01[0125]\d{8}$/.test(phone)) { err.textContent = "رقم الواتساب لازم يبقى 11 رقم ويبدأ بـ 01."; err.hidden = false; return; }
     err.hidden = true;
     if (window.MST) window.MST.setWho(name, phone); else { set("mst-name", name); set("mst-phone", phone); set("mst-who-sent", "0"); }
-    $("who").hidden = true; document.documentElement.classList.remove("gate"); hello();
-    // التصريح والمزامنة (acct.js): أول ما يسجّل، تقدّمه بيتحفظ على حسابه
+    set("mst-first", "1");
+    closeWho(); hello();
+    var n = next();
+    // التصريح والمزامنة (acct.js): أول ما يسجّل، تقدّمه بيتحفظ على حسابه. ولو كان رايح محاضرة: نفتحها (c.html بياخد التصريح بنفسه)
+    if (n) { location.href = n; return; }
     if (window.MSTA) window.MSTA.ensure().then(function () { return window.MSTA.sync(); }).then(function () { window.dispatchEvent(new CustomEvent("mst-sync")); }).catch(function () {});
+    window.dispatchEvent(new CustomEvent("mst-who"));
   }
   $("who-form").addEventListener("submit", saveWho);
-  // المادة المقفولة: الضغط عليها (أو على أي لينك جوّاها) بيودّي لكارت التسجيل
-  document.addEventListener("click", function (e) {
-    if (!document.documentElement.classList.contains("gate") || !e.target.closest || !e.target.closest(".course")) return;
-    e.preventDefault(); $("who").scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(function () { $("who-name").focus(); }, 400);
-  }, true);
-  // «إلغاء» بيظهر بس وانت بتعدّل اسم موجود (من غير اسم الكارت إجباري ومفيهوش إلغاء)
-  $("who-later").addEventListener("click", function () { $("who").hidden = true; });
-  $("edit-who").addEventListener("click", function () { openWho(true); $("who").scrollIntoView({ behavior: "smooth", block: "center" }); });
+  $("who-later").addEventListener("click", function () { next(); closeWho(); });
+  if ($("reg-go")) $("reg-go").addEventListener("click", function () { openWho(); });
+  function fromHash() {
+    if (location.hash !== "#who") return;
+    if (get("mst-name")) { try { history.replaceState(null, "", location.pathname); } catch (e) {} return; }
+    openWho(next(true) ? "lock" : "");
+  }
+  window.addEventListener("hashchange", fromHash);
   window.MSTHello = hello;
+  window.MSTWho = { open: openWho, close: closeWho };
   hello();
-  if (!get("mst-name")) openWho(false);
-  else if (/[?&]edit=1/.test(location.search)) { openWho(true); setTimeout(function () { $("who").scrollIntoView({ block: "center" }); $("who-name").focus(); }, 300); }
-
+  if (/[?&]edit=1/.test(location.search) && get("mst-name")) openWho("edit");
+  else fromHash();
 })();

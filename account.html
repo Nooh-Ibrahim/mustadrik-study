@@ -47,8 +47,7 @@
   <h2 class="sec">تقدّمك في الأسئلة</h2>
   <div class="atiles" id="p-tiles"></div>
   <div class="clist" id="p-courses" style="margin-top:.8rem"></div>
-  <p class="try">الأرقام دي من الأسئلة اللي حلّيتها جوّه المواد. «صح آخر مرة» يعني آخر مرة جاوبت فيها السؤال كانت صح.</p>
-
+  
   <section class="mytime" id="mytime" aria-labelledby="t-h" hidden>
     <div class="th"><h2 class="sec" id="t-h">وقت مذاكرتك</h2><span class="seg"><button type="button" data-range="7" aria-pressed="true">أسبوع</button><button type="button" data-range="30" aria-pressed="false">شهر</button></span></div>
     <div class="tk"><div class="card"><b id="t-today"></b><span>النهاردة</span></div><div class="card"><b id="t-range"></b><span id="t-range-l"></span></div><div class="card"><b id="t-all"></b><span>من الأول</span></div></div>
@@ -70,6 +69,19 @@
     <h2 class="sec">آخر مرات ذاكرت فيها</h2>
     <div class="sess" id="s-list"></div>
   </section>
+  <section class="card acc" id="acc" aria-labelledby="acc-h">
+    <h2 id="acc-h">حسابك على أكتر من جهاز</h2>
+    <p class="acc-st" id="acc-st"></p>
+    <p>بتذاكر على الموبايل والكمبيوتر؟ اربط الجهاز التاني مرة واحدة، وبعدها أي إجابة أو علامة «مهم» أو غلطة على جهاز بتوصل للتاني لوحدها.</p>
+    <div class="row"><button type="button" class="btn" id="acc-link">اربط جهاز تاني</button><button type="button" class="btn quiet" id="acc-sync">زامن دلوقتي</button></div>
+    <div class="acc-code" id="acc-code" hidden></div>
+    <p class="fine" id="acc-msg" aria-live="polite"></p>
+    <details class="bk"><summary>نسخة احتياطية من غير نت (كود واحد لكل المواد)</summary>
+      <p>لو مفيش نت، أو عايز تنقل تقدّمك بنفسك: صدّر كود واحد فيه كل المواد، والصقه في الجهاز التاني.</p>
+      <div class="row"><button type="button" class="btn" id="bk-out">صدّر تقدّمي في كل المواد</button><button type="button" class="btn quiet" id="bk-in">الصق كود</button></div>
+      <div id="bk-box"></div>
+    </details>
+  </section>
   <section>
     <h2 class="sec">أجهزتك</h2>
     <ul class="devs" id="d-list"></ul>
@@ -89,5 +101,6 @@
 <script src="acct.js" defer></script>
 <script src="mytime.js" defer></script>
 <script src="account.js" defer></script>
+<script src="link.js" defer></script>
 </body>
 </html>
