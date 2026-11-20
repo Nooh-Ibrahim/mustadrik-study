@@ -22,7 +22,7 @@
     { code: "BAS113", name: "الجبر الخطي", base: "BAS113_LinearAlgebra", skey: "linalg1w1", state: "open", pdf_size: 3864115 },
     { code: "BAS116", name: "أساسيات الكهرباء والإلكترونيات", base: "BAS116_Electronics", skey: "bas116", state: "open", pdf_size: 2358743 },
     { code: "GEN002", name: "اللغة الإنجليزية 1", base: "GEN002_English", skey: "gen002", state: "open", pdf_size: 0 },
-    { code: "CS50x", name: "CS50x: مقدمة في علوم الحاسب (هارفارد)", base: "CS50x", skey: "cs50x", state: "open", pdf_size: 0 }
+    { code: "CS50x", name: "CS50x: مقدمة في علوم الحاسب (هارفارد)", base: "CS50x_IntroCS", skey: "cs50x", state: "open", pdf_size: 0 }
   ];
   function list() { var l = getJ("mst-subjects"); return l && l.length ? l : DEFAULT; }
   // معلومات صفحات المواد (data/courses.json: عدد الدروس والأسئلة، والمحاضرات). بتتحفظ في mst-cinfo عشان تظهر من غير نت.
