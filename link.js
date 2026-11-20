@@ -5,7 +5,7 @@
   function get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   var $ = function (id) { return document.getElementById(id); };
   var A = window.MSTA; if (!A || !$("acc")) return;
-  var SK = ["bas114", "cis1ch1", "calc1w1", "linalg1w1", "bas116", "gen002"];
+  var SK = ["bas114", "cis1ch1", "calc1w1", "linalg1w1", "bas116", "gen002", "cs50x"];
   function list() { try { var l = JSON.parse(get("mst-subjects")); if (l && l.length) return l; } catch (e) {} return SK.map(function (k) { return { skey: k, name: k }; }); }
   function ago(t) {
     if (!t) return "لسه";
