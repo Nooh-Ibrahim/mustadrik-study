@@ -26,7 +26,7 @@
     $("p-name").textContent = n || "حسابك";
     $("p-av").textContent = n ? n.trim().charAt(0) : "؟";
     $("p-phone").innerHTML = phone ? 'رقمك: <bdi dir="ltr">' + esc(phone) + "</bdi>" : "";
-    $("p-since").textContent = reg ? "متسجّل من " + dt(reg, { day: "numeric", month: "long", year: "numeric" }) : "";
+    $("p-since").textContent = reg ? "مسجَّل منذ " + dt(reg, { day: "numeric", month: "long", year: "numeric" }) : "";
   }
   profile(name, get("mst-phone"), 0);
 
@@ -45,12 +45,12 @@
       T.ans += a; T.ok += ok; T.no += no; T.mk += m;
       var tot = Math.max(s.total, a) || 1;
       cards.push([a + m, '<div class="ccard"><h3><a href="m.html?s=' + encodeURIComponent(s.base) + '">' + esc(s.name) + '</a><span class="code">' + esc(s.code) + "</span></h3>" +
-        '<div class="cbar" role="img" aria-label="' + ok + " صح و" + no + " غلط من " + (s.total || a) + '"><span class="g" style="width:' + (ok / tot * 100) + '%"></span><span class="r" style="width:' + (no / tot * 100) + '%"></span></div>' +
-        '<p class="cnums"><span>جاوبت <b>' + a + "</b>" + (s.total ? " من " + s.total : "") + "</span><span>صح آخر مرة <b>" + ok + "</b></span><span>محتاج مراجعة <b>" + no + "</b></span><span>مهم <b>" + m + "</b></span></p></div>"]);
+        '<div class="cbar" role="img" aria-label="' + ok + " صحيحة و" + no + " خاطئة من " + (s.total || a) + '"><span class="g" style="width:' + (ok / tot * 100) + '%"></span><span class="r" style="width:' + (no / tot * 100) + '%"></span></div>' +
+        '<p class="cnums"><span>أجبت <b>' + a + "</b>" + (s.total ? " من " + s.total : "") + "</span><span>صحيحة آخر مرة <b>" + ok + "</b></span><span>تحتاج مراجعة <b>" + no + "</b></span><span>مهم <b>" + m + "</b></span></p></div>"]);
     });
     cards.sort(function (a, b) { return b[0] - a[0]; });
     $("p-courses").innerHTML = cards.map(function (c) { return c[1]; }).join("");
-    $("p-tiles").innerHTML = [[T.ans, "سؤال جاوبته"], [T.ok, "صح آخر مرة"], [T.no, "محتاج مراجعة"], [T.mk, "علّمته مهم"]].map(function (x) {
+    $("p-tiles").innerHTML = [[T.ans, "سؤالًا أجبته"], [T.ok, "صحيحة آخر مرة"], [T.no, "تحتاج مراجعة"], [T.mk, "علّمته مهمًا"]].map(function (x) {
       return '<div class="stile"><b>' + x[0] + "</b><span>" + x[1] + "</span></div>";
     }).join("");
   }
@@ -76,39 +76,39 @@
     var S = j.subjects || {}, sn = function (k) { return S[k] || (k === "home" ? "الصفحة الرئيسية" : k === "guide" ? "الشرح" : k); };
     // الأجهزة
     $("d-list").innerHTML = (j.devices || []).map(function (d) {
-      return '<li class="' + (d.this ? "me" : "") + '">' + DEV + "<span><b>" + esc(d.dv || "جهاز " + d.n) + (d.this ? " (الجهاز ده)" : "") + "</b><small>آخر مرة: " + dt(d.last, { day: "numeric", month: "long", hour: "numeric", minute: "2-digit" }) + "</small></span></li>";
-    }).join("") || '<li>الجهاز ده بس</li>';
+      return '<li class="' + (d.this ? "me" : "") + '">' + DEV + "<span><b>" + esc(d.dv || "جهاز " + d.n) + (d.this ? " (هذا الجهاز)" : "") + "</b><small>آخر استخدام: " + dt(d.last, { day: "numeric", month: "long", hour: "numeric", minute: "2-digit" }) + "</small></span></li>";
+    }).join("") || '<li>هذا الجهاز فقط</li>';
     // الجلسات: آخر 8 جوّه المواد
     var ss = (j.sessions || []).filter(function (s) { return s.subj !== "home" && s.subj !== "guide" && s.secs >= 60; }).slice(0, 8);
     $("s-sec").hidden = !ss.length;
     $("s-list").innerHTML = ss.map(function (s) {
-      var x = []; if (s.ans) x.push("جاوبت " + s.ans + " سؤال" + (s.wrong ? "، وغلطت في " + s.wrong : ""));
+      var x = []; if (s.ans) x.push("أجبت " + s.ans + " سؤالًا" + (s.wrong ? "، وأخطأت في " + s.wrong : ""));
       return '<div class="ses"><span class="sd">' + dt(s.start, { weekday: "short", day: "numeric", month: "short" }) + '</span><span class="sn">' + esc(sn(s.subj)) + '</span><span class="st">' + fmt(s.secs) + "</span>" +
-        '<span class="sx">' + dt(s.start, { hour: "numeric", minute: "2-digit" }) + " لحد " + dt(s.end, { hour: "numeric", minute: "2-digit" }) + (x.length ? " · " + x.join("") : "") + "</span></div>";
+        '<span class="sx">' + dt(s.start, { hour: "numeric", minute: "2-digit" }) + " حتى " + dt(s.end, { hour: "numeric", minute: "2-digit" }) + (x.length ? " · " + x.join("") : "") + "</span></div>";
     }).join("");
     // الأسئلة اللي غلط فيها: آخر 10
     var w = (j.wrong || []).slice(0, 10);
     $("w-sec").hidden = !w.length;
     $("w-list").innerHTML = w.map(function (q) {
       return "<li>" + (q.txt ? '<span class="wq" lang="en" dir="ltr">' + esc(qclean(q.txt)) + "</span>" : "<b>سؤال <bdi dir=\"ltr\">" + esc(q.qid) + "</bdi></b>") +
-        '<span class="wm">' + esc(sn(q.page)) + (q.lt ? " · " + esc(q.lt) : "") + " · غلطت فيه " + q.w + (q.w === 1 ? " مرة" : " مرات") + " · " +
-        (q.fixed ? '<span class="fx">✓ اتصلّحت</span>' : '<span class="nf">لسه</span>') + "</span></li>";
+        '<span class="wm">' + esc(sn(q.page)) + (q.lt ? " · " + esc(q.lt) : "") + " · أخطأت فيه " + (q.w === 1 ? "مرة" : q.w === 2 ? "مرتين" : q.w + " مرات") + " · " +
+        (q.fixed ? '<span class="fx">✓ صحّحتها</span>' : '<span class="nf">لم تُصحَّح</span>') + "</span></li>";
     }).join("");
   }
   function msg(t, bad) { var m = $("srv"); m.textContent = t || ""; m.className = "srvmsg" + (bad ? " bad" : ""); }
   function pull(again) {
-    var A = window.MSTA; if (!A || !A.on || !name) { if (name) msg("الأجهزة والجلسات بتظهر على الموقع الحقيقي بس."); return; }
-    if (navigator.onLine === false) { msg("مفيش نت: ده تقدّمك على الجهاز ده بس."); return; }
+    var A = window.MSTA; if (!A || !A.on || !name) { if (name) msg("الأجهزة والجلسات تظهر على الموقع الحقيقي فقط."); return; }
+    if (navigator.onLine === false) { msg("لا يوجد إنترنت: هذا تقدّمك على هذا الجهاز فقط."); return; }
     A.ensure().then(function (tok) {
       return fetch(EP + "/me", { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ tok: tok }) });
     }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { j.status = r.status; return j; }); }).then(function (j) {
       if (j.ok) { msg(""); server(j); return; }
       if (j.status === 401 && !again) { try { localStorage.removeItem("mst-tok"); } catch (e) {} return pull(true); }
-      if (j.status === 403) return msg("الوصول مقفول لرقمك. كلّم نوح.", true);
-      if (j.status === 429) return msg("طلبات كتير. افتح الصفحة تاني بعد دقيقة.");
-      msg("ماقدرناش نجيب بياناتك من السيرفر دلوقتي. ده تقدّمك على الجهاز ده.");
-    }, function (e) { msg(e && e.message === "blocked" ? "الوصول مقفول لرقمك. كلّم نوح." : "ماقدرناش نوصل للسيرفر. ده تقدّمك على الجهاز ده.", e && e.message === "blocked"); });
+      if (j.status === 403) return msg("الوصول مغلق لرقمك. تواصل معنا على واتساب.", true);
+      if (j.status === 429) return msg("طلبات كثيرة. افتح الصفحة مرة أخرى بعد دقيقة.");
+      msg("تعذّر جلب بياناتك من الخادم الآن. هذا تقدّمك على هذا الجهاز.");
+    }, function (e) { msg(e && e.message === "blocked" ? "الوصول مغلق لرقمك. تواصل معنا على واتساب." : "تعذّر الاتصال بالخادم. هذا تقدّمك على هذا الجهاز.", e && e.message === "blocked"); });
   }
   // acct.js بيتحمّل defer قبل الملف ده، فـ MSTA جاهز
-  if (name) { $("d-list").innerHTML = "<li>" + DEV + "<span><b>الجهاز ده</b></span></li>"; pull(false); }
+  if (name) { $("d-list").innerHTML = "<li>" + DEV + "<span><b>هذا الجهاز</b></span></li>"; pull(false); }
 })();

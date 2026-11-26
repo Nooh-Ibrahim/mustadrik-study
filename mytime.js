@@ -6,7 +6,7 @@
   var COURSES = [["bas114", "الفيزياء"], ["csc115", "نظم الحاسب"], ["bas112", "التفاضل والتكامل"], ["bas113", "الجبر الخطي"], ["bas116", "الكهرباء والإلكترونيات"], ["gen002", "الإنجليزي"], ["cs50x", "CS50x"]];
   // المواد الجديدة اللي نوح بيضيفها من صفحة الإدارة (home.js بيحفظ اللستة في mst-subjects)
   try { var SL = JSON.parse(localStorage.getItem("mst-subjects")); if (SL && SL.length) COURSES = SL.filter(function (s) { return s.state !== "hidden"; }).map(function (s) { return [s.code.toLowerCase(), s.name]; }); } catch (e) {}
-  var DAYS = ["الحد", "الاتنين", "التلات", "الأربع", "الخميس", "الجمعة", "السبت"];
+  var DAYS = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
   var $ = function (id) { return document.getElementById(id); };
   function get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
@@ -59,7 +59,7 @@
     var inRange = days.reduce(function (s, d) { return s + secsOf(d); }, 0);
     $("t-today").textContent = fmt(secsOf(today));
     $("t-range").textContent = fmt(inRange);
-    $("t-range-l").textContent = range === 7 ? "آخر 7 أيام" : "آخر 30 يوم";
+    $("t-range-l").textContent = range === 7 ? "آخر 7 أيام" : "آخر 30 يومًا";
     $("t-all").textContent = fmt(all);
     var mx = Math.max.apply(null, days.map(function (d) { return secsOf(d); }).concat([60]));
     $("t-chart").innerHTML = days.map(function (d, i) {

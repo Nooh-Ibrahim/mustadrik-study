@@ -101,9 +101,9 @@
       list.forEach(function (m) {
         if (shown[m.id] || typeof m.txt !== "string") return; shown[m.id] = 1;
         var c = document.createElement("section"); c.className = "card msg-card"; c.setAttribute("role", "status");
-        var h = document.createElement("h2"); h.textContent = "رسالة من نوح";
+        var h = document.createElement("h2"); h.textContent = "رسالة من مُستدرِك";
         var p = document.createElement("p"); p.className = "msg-txt"; p.textContent = m.txt;
-        var b = document.createElement("button"); b.type = "button"; b.className = "btn"; b.textContent = "تمام";
+        var b = document.createElement("button"); b.type = "button"; b.className = "btn"; b.textContent = "حسنًا";
         b.onclick = function () {
           c.remove();
           fetch(EP + "/msg-seen", { method: "POST", headers: { "Content-Type": "text/plain" }, body: JSON.stringify({ dev: dev, id: m.id }) }).catch(function () {});

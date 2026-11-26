@@ -35,7 +35,7 @@
     var c = info && info.courses && info.courses[base];
     var name = (c && c.ar) || (subj && subj.name) || base.replace(/_/g, " ");
     var code = (c && c.code) || (subj && subj.code) || "";
-    document.title = name + " · الملفات الدراسية";
+    document.title = name + " · مُستدرِك";
     $("crumb-name").textContent = name;
     $("c-code").textContent = code; $("c-code").hidden = !code || (subj && subj.grp);
     $("c-name").textContent = name;
@@ -50,7 +50,7 @@
     if (c) {
       var nl = c.lectures.filter(function (l) { return /^\d+$/.test(l.n); }).length;
       if (nl) t.push([nl, "محاضرة"]);
-      t.push([c.counts.lessons, "درس"], [c.counts.q, "سؤال بحله"]);
+      t.push([c.counts.lessons, "درس"], [c.counts.q, "سؤالًا بحلّه"]);
       if (c.counts.labs) t.push([c.counts.labs, "ملعب تفاعلي"]); else if (c.counts.plots) t.push([c.counts.plots, "رسمة"]);
     }
     $("c-tiles").innerHTML = t.map(function (x) { return '<div class="stile"><b>' + x[0] + "</b><span>" + x[1] + "</span></div>"; }).join("");
@@ -103,8 +103,8 @@
     $("lab-sec").hidden = !L.length;
     if (!L.length) return;
     $("lab-h").textContent = isPlots ? "رسومات من المادة" : "ملاعب المادة";
-    $("lab-lead").innerHTML = isPlots ? "المادة دي مفيهاش ملاعب لسه، بس فيها " + c.counts.plots + " رسمة حقيقية بالأرقام على المحاور. دي عيّنة منها:" :
-      "الملعب حتة جوّه الدرس <b>بتجرّب فيها بإيدك</b>: تغيّر رقم أو تدوس زرار، وتشوف النتيجة بتتغيّر قدامك. فيه " + L.length + " ملعب في المادة، ودي صور حقيقية منها.";
+    $("lab-lead").innerHTML = isPlots ? "لا توجد ملاعب في هذه المادة بعد، لكن فيها " + c.counts.plots + " رسمة حقيقية بالأرقام على المحاور. وهذه عيّنة منها:" :
+      "الملعب جزء داخل الدرس <b>تجرّب فيه بيدك</b>: تغيّر رقمًا أو تضغط زرًا، فترى النتيجة تتغيّر أمامك. في المادة " + L.length + " ملعبًا، وهذه صور حقيقية منها.";
     var star = L.filter(function (l) { return l.star; }), rest = L.filter(function (l) { return !l.star; });
     if (!star.length) { star = L.slice(0, 4); rest = L.slice(4); }
     $("labs-star").innerHTML = star.map(function (l) { return labCard(c, l); }).join("");
@@ -150,14 +150,14 @@
     $("way-sec").hidden = !c;
     if (!c) return;
     $("c-lede").innerHTML = c.lede ? ar(c.lede) : ""; $("c-lede").hidden = !c.lede;
-    var labsTxt = c.counts.labs ? c.counts.labs + " ملعب تجرّب فيهم بإيدك، ورسومات حقيقية مرسومة بالأرقام." : "رسومات حقيقية بالأرقام على المحاور (" + c.counts.plots + " رسمة)، مش صور منقولة.";
+    var labsTxt = c.counts.labs ? c.counts.labs + " ملعبًا تجرّب فيها بيدك، ورسومات حقيقية مرسومة بالأرقام." : "رسومات حقيقية بالأرقام على المحاور (" + c.counts.plots + " رسمة)، لا صور منقولة.";
     $("c-ways").innerHTML = [
-      way("talk", "شرح من الصفر، خطوة خطوة", "كل درس بيبدأ بالمشكلة اللي بيحلها، وكل خطوة في الحل مكتوبة، والمهم بخط غامق، وجمل تساعدك تحفظ."),
-      way("src", "كل معلومة بمصدرها", "رقم السلايد أو الصفحة جنب كل معلومة. اللي مش في ملفات الدكتور عليه «➕ إضافة مني»، والغلط في الملفات عليه «⚠» والصح جنبه."),
-      way("en", "الإنجليزي زي الامتحان", "جمل السلايدات المهمة بالإنجليزي زي ما هي، وتحتها الترجمة، والمصطلحات بالإنجليزي زي ما هتيجي في الامتحان."),
+      way("talk", "شرح من الصفر، خطوة خطوة", "يبدأ كل درس بالمشكلة التي يحلّها، وكل خطوة في الحل مكتوبة، والمهم بخط عريض، مع جمل تساعدك على الحفظ."),
+      way("src", "كل معلومة بمصدرها", "رقم الشريحة أو الصفحة بجانب كل معلومة. وما ليس في ملفات الدكتور عليه «➕ إضافة مني»، والخطأ في الملفات عليه «⚠» والصواب بجانبه."),
+      way("en", "الإنجليزية كما في الامتحان", "جمل الشرائح المهمة بالإنجليزية كما هي، وتحتها الترجمة، والمصطلحات بالإنجليزية كما ستأتي في الامتحان."),
       way("lab", c.counts.labs ? "ملاعب ورسومات" : "رسومات", labsTxt),
-      way("bank", "بنك أسئلة بحلول كاملة", c.counts.q + " سؤال، منهم " + c.counts.mcq + " اختيار من متعدد، والباقي مسائل. كل سؤال بحله، وكل اختيار مكتوب ليه صح أو غلط."),
-      way("drill", "تدريب وامتحان محاكاة", "«درّبني» آخر كل درس، واللي تغلط فيه يرجعلك تاني لحد ما يثبت. وقبل الامتحان: امتحان محاكاة بأسئلة عشوائية.")
+      way("bank", "بنك أسئلة بحلول كاملة", c.counts.q + " سؤالًا، منها " + c.counts.mcq + " اختيار من متعدد، والباقي مسائل. كل سؤال بحلّه، ومع كل اختيار سبب صحته أو خطئه."),
+      way("drill", "تدريب وامتحان محاكاة", "«درّبني» في آخر كل درس، وما تخطئ فيه يعود إليك حتى يثبت. وقبل الامتحان: امتحان محاكاة بأسئلة عشوائية.")
     ].join("");
   }
 
@@ -165,7 +165,7 @@
   function saved() {
     var el = $("c-saved"); if (!window.caches || !el) return;
     caches.open(CONTENT).then(function (cc) { return cc.match(EP + "/file/" + base + ".html"); }).then(function (r) {
-      el.textContent = r ? "✓ محفوظة على جهازك، وبتفتح من غير نت" : "أول مرة تفتحها محتاج نت، وبعدها بتفتح من غير نت.";
+      el.textContent = r ? "✓ محفوظة على جهازك، وتفتح دون إنترنت" : "أول فتح لها يحتاج إنترنت، وبعدها تفتح دون إنترنت.";
       el.classList.toggle("on", !!r);
     }).catch(function () {});
   }

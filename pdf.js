@@ -13,7 +13,7 @@
     var A = window.MSTA, base = b.getAttribute("data-pdf"), url = EP + "/file/" + base + ".pdf", lab = b.querySelector("[data-pl]") || b.firstChild, old = lab.textContent;
     function done(blob) { lab.textContent = old; b.disabled = false; b.classList.add("got"); var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = base + ".pdf"; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 60000); }
     function fail(m) { lab.textContent = m; b.disabled = false; setTimeout(function () { lab.textContent = old; }, 4000); }
-    b.disabled = true; lab.textContent = "بينزّل...";
+    b.disabled = true; lab.textContent = "جارٍ التنزيل…";
     (window.caches ? caches.open(CONTENT).then(function (c) { return c.match(url); }) : Promise.resolve(null)).then(function (hit) {
       if (hit && navigator.onLine === false) return hit.blob().then(done);
       return A.ensure().then(function (tok) {
@@ -21,9 +21,9 @@
       }).then(function (r) {
         if (r.ok) { if (window.caches) { var cp = r.clone(); caches.open(CONTENT).then(function (c) { return c.put(url, cp); }).catch(function () {}); } return r.blob().then(done); }
         if (r.status === 401) { try { localStorage.removeItem("mst-tok"); } catch (_) {} }
-        if (r.status === 403) return r.json().then(function (j) { fail(j.err === "blocked" ? "الوصول مقفول" : "مقفولة"); });
+        if (r.status === 403) return r.json().then(function (j) { fail(j.err === "blocked" ? "الوصول مغلق" : "غير متاحة"); });
         throw new Error();
-      }).catch(function () { if (hit) return hit.blob().then(done); fail("مفيش نت"); });
+      }).catch(function () { if (hit) return hit.blob().then(done); fail("لا يوجد إنترنت"); });
     });
   });
 })();
