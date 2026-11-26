@@ -17,7 +17,7 @@
 // ?print = نسخة الـ PDF (فاتح دايماً)
 (function(){var r=document.documentElement;
   if(/print/.test(location.search)){r.setAttribute("data-theme","light");r.classList.add("print");}
-  else{try{var t=localStorage.getItem("hub-theme");if(t==="light"||t==="dark")r.setAttribute("data-theme",t)}catch(e){}}})();
+  else{try{var t=localStorage.getItem("hub-theme")}catch(e){}r.setAttribute("data-theme",t==="dark"?"dark":"light")}})();
 </script>
 <link rel="stylesheet" href="site.css">
 <style>
@@ -411,6 +411,7 @@ html.print body{background:#fff}
 </main>
 </div>
 <script src="ui.js"></script>
+<script src="fx.js" defer></script>
 <script src="stats.js" data-page="guide" defer></script>
 </body>
 </html>

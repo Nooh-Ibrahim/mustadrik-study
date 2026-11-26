@@ -19,13 +19,13 @@
   function openWho(mode) {
     var edit = mode === "edit", why = $("who-why");
     $("who").hidden = false;
-    $("who-h").textContent = edit ? "عدّل اسمك أو رقمك" : "سجّل في 10 ثواني";
+    $("who-h").textContent = edit ? "عدّل اسمك أو رقمك" : "سجّل في 10 ثوانٍ";
     why.hidden = edit;
-    why.textContent = mode === "lock" ? "المحاضرة دي بتتفتح بحساب. سجّل مرة واحدة: تفتح كل المحاضرات، وتقدّمك يتحفظ على كل أجهزتك."
-      : "مرة واحدة بس: تفتح كل المحاضرات في كل المواد، وتقدّمك يتحفظ على كل أجهزتك.";
+    why.textContent = mode === "lock" ? "هذه المحاضرة تحتاج حسابًا. سجّل مرة واحدة: تُفتح كل المحاضرات، ويُحفظ تقدّمك على كل أجهزتك."
+      : "مرة واحدة فقط: تُفتح كل المحاضرات في كل المواد، ويُحفظ تقدّمك على كل أجهزتك.";
     $("join-q").hidden = edit; if (edit) $("join").hidden = true;
     $("who-form").querySelector("button[type=submit]").textContent = edit ? "حفظ" : "سجّل";
-    $("who-later").textContent = edit ? "إلغاء" : "مش دلوقتي";
+    $("who-later").textContent = edit ? "إلغاء" : "ليس الآن";
     if (edit) { $("who-name").value = get("mst-name") || ""; $("who-phone").value = get("mst-phone") || ""; }
     $("who").scrollIntoView({ behavior: "smooth", block: "center" });
     setTimeout(function () { try { $("who-name").focus({ preventScroll: true }); } catch (e) {} }, 450);
@@ -39,8 +39,8 @@
     var name = $("who-name").value.replace(/\s+/g, " ").trim();
     var phone = $("who-phone").value.replace(/[^\d٠-٩]/g, "").replace(/[٠-٩]/g, function (d) { return "٠١٢٣٤٥٦٧٨٩".indexOf(d); });
     var err = $("who-err");
-    if (name.split(" ").length < 2) { err.textContent = "اكتب اسمك ثنائي على الأقل."; err.hidden = false; return; }
-    if (!/^01[0125]\d{8}$/.test(phone)) { err.textContent = "رقم الواتساب لازم يبقى 11 رقم ويبدأ بـ 01."; err.hidden = false; return; }
+    if (name.split(" ").length < 2) { err.textContent = "اكتب اسمك ثنائيًا على الأقل."; err.hidden = false; return; }
+    if (!/^01[0125]\d{8}$/.test(phone)) { err.textContent = "رقم الواتساب يجب أن يكون 11 رقمًا ويبدأ بـ 01."; err.hidden = false; return; }
     err.hidden = true;
     if (window.MST) window.MST.setWho(name, phone); else { set("mst-name", name); set("mst-phone", phone); set("mst-who-sent", "0"); }
     set("mst-first", "1");

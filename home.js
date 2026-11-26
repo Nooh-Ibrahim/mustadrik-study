@@ -39,21 +39,45 @@
     var head = (s.grp ? "" : '<span class="code en">' + esc(s.code) + "</span>") + '<h3 id="c-' + c + '">' + esc(s.name) + "</h3>" +
       (ci && ci.counts ? '<span class="cmeta">' + ci.counts.lessons + " درس · " + ci.counts.q + " سؤال</span>" : "");
     if (s.state !== "open") return '<div class="card course soon" data-base="' + esc(s.base) + '">' + head + '<span class="cst">قريباً</span></div>';
-    return '<a class="card course" href="' + link(s) + '" aria-labelledby="c-' + c + '" data-base="' + esc(s.base) + '">' + head +
-      (p.pct ? '<span class="cbar" aria-hidden="true"><i style="width:' + Math.max(4, p.pct) + '%"></i></span><span class="cst">حلّيت ' + p.pct + "% من الأسئلة</span>"
-        : '<span class="cst new">ابدأ</span>') + "</a>";
+    // بدأ المادة (حل سؤال أو فتح درس): شريط تقدّم و«كمّل». لسه: «ابدأ»
+    var on = p.a > 0 || !!(getJ("mst-last") || {})[s.skey];
+    return '<a class="card course' + (on ? " on" : "") + '" href="' + link(s) + '" aria-labelledby="c-' + c + '" data-base="' + esc(s.base) + '">' + head +
+      (on ? '<span class="cbar" role="progressbar" aria-label="الأسئلة التي حللتها" aria-valuenow="' + p.pct + '" aria-valuemin="0" aria-valuemax="100"><i style="width:' + Math.max(3, p.pct) + '%"></i></span>' +
+        '<span class="cfoot"><span class="cst">' + (p.pct ? "حللت " + p.pct + "% من الأسئلة" : "لم تحل أسئلة بعد") + '</span><span class="cgo">أكمل</span></span>'
+        : '<span class="cfoot"><span class="cgo new">ابدأ</span></span>') + "</a>";
   }
+  // الكورسات اللي برّه مواد الكلية (CS50x و ICPC): قسم «كورسات» لوحده. s.kind === "course" من السيرفر بيكفي لأي كورس جديد
+  var TRACKS = { CS50x: 1, ICPC: 1 };
+  function isTrack(s) { return s.kind === "course" || !!TRACKS[s.code]; }
   // المواد الخاصة (s.grp، بكود): كل مجموعة تحت عنوانها، ومواد الدفعة تحت «مواد الذكاء الاصطناعي». ومن غير كود: زي الأول بالظبط.
   function groups() { var g = getJ("mst-groups"); return g && g.length ? g : []; }
   var picking = false;
+  // سهم جنب «مواد الكلية» و«كورسات» بيطوي القسم كله، عشان اللي عايز ينزل للي تحت يوصل بسرعة (طلب نوح 2026-11-26).
+  // الطيّ بيتحفظ على الجهاز (home-fold)
+  function folds() { return getJ("home-fold") || {}; }
+  function paintFold() {
+    var F = folds();
+    [["courses", ["courses"]], ["tracks", ["tracks", "tracks-p"]]].forEach(function (x) {
+      var shut = !!F[x[0]], b = $(x[0] + "-f"), none = x[0] === "tracks" && $("tracks-h").hidden;
+      b.setAttribute("aria-expanded", String(!shut));
+      x[1].forEach(function (id) { $(id).hidden = shut || none; });
+    });
+  }
+  function fold(name, shut) { var F = folds(); if (shut) F[name] = 1; else delete F[name]; set("home-fold", JSON.stringify(F)); paintFold(); }
+  ["courses", "tracks"].forEach(function (n) { $(n + "-f").addEventListener("click", function () { fold(n, this.getAttribute("aria-expanded") === "true"); }); });
   function draw() {
     var l = list(), G = groups().filter(function (g) { return l.some(function (s) { return s.grp === g.grp; }); });
-    $("courses").innerHTML = l.filter(function (s) { return !s.grp; }).map(card).join("");
-    $("courses-h").textContent = picking ? "1. اختار مادة" : G.length ? "مواد الذكاء الاصطناعي" : "المواد";
+    var T = l.filter(function (s) { return !s.grp && isTrack(s); });
+    $("courses").innerHTML = l.filter(function (s) { return !s.grp && !isTrack(s); }).map(card).join("");
+    $("courses-t").textContent = picking ? "1. اختر مادة" : "مواد الكلية";
+    if (picking) fold("courses", false);
+    $("tracks").innerHTML = T.map(card).join("");
+    $("tracks-h").hidden = !T.length;
+    paintFold();
     $("gcourses").innerHTML = G.map(function (g) {
       return '<h2 class="sec">' + esc(g.name) + '</h2><div class="courses">' + l.filter(function (s) { return s.grp === g.grp; }).map(card).join("") + "</div>";
     }).join("");
-    resume(); news(); saved();
+    resume(); news();
   }
 
   // ---------- كمّل من مكان ما وقفت ----------
@@ -66,35 +90,43 @@
       if (at && (!best || at > best.at)) best = { s: s, at: at, l: l };
     });
     box.hidden = !best; if (!best) return;
-    box.href = link(best.s);
-    box.innerHTML = '<span class="rk">كمّل من مكان ما وقفت</span><b class="rn">' + esc(best.s.name) + "</b>" +
-      (best.l && best.l.t ? '<span class="rl">' + esc(best.l.t) + "</span>" : "") + '<span class="rgo">كمّل</span>';
+    // المحاضرة اللي كان فيها (L من المحرّك) بتفتح على طول، والدرس نفسه مكتوب
+    var l = best.l || {}, ci = cinfo(best.s), lec = null, p = prog(best.s);
+    if (l.L && ci && ci.lectures) lec = ci.lectures.filter(function (x) { return String(x.n) === String(l.L); })[0] || null;
+    box.href = link(best.s) + (l.L ? "#lec=" + encodeURIComponent(l.L) : "");
+    box.innerHTML = '<span class="rk">أكمل من حيث توقفت</span><b class="rn">' + esc(best.s.name) + "</b>" +
+      (l.t ? '<span class="rl">' + (lec ? esc(lec.short || lec.t) + " · " : "") + esc(l.t) + "</span>" : "") +
+      (p.pct ? '<span class="rbar"><span class="cbar" aria-hidden="true"><i style="width:' + Math.max(3, p.pct) + '%"></i></span><small>حللت ' + p.pct + "% من أسئلة المادة</small></span>" : "") +
+      '<span class="rgo">أكمل</span>';
   }
 
-  // كارت «جديد في المواد»: البنود العلمية من سجل التحديثات (news في data/courses.json، آخر أسبوعين). تحت المواد، مش فوقها.
+  // كارت «جديد في المواد»: البنود العلمية من سجل التحديثات (news في data/courses.json، آخر أسبوعين).
+  // فوق المواد ومفتوح (طلب نوح 2026-11-26): آخر جديد في كل مادة ظاهر، والباقي تحت «كل الجديد».
   var MON = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
   function arDate(d) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d || ""); return m ? (+m[3]) + " " + MON[+m[2] - 1] : ""; }
+  // آخر 5 أيام بس (طلب نوح 2026-11-26)، بتاريخ الجهاز
+  var NEWS_DAYS = 5;
+  function cutoff() { var d = new Date(Date.now() - NEWS_DAYS * 864e5); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
   function news() {
-    var rows = [], box = $("news");
-    list().forEach(function (s) {
-      var c = cinfo(s); if (s.state !== "open" || !c || !c.news || !c.news.length) return;
-      rows.push('<div class="nw"><a class="nwh" href="' + link(s) + '">' + esc(s.name) + "</a><ul>" + c.news.map(function (x) { return "<li>" + esc(x.t) + (arDate(x.date) ? " <small>" + arDate(x.date) + "</small>" : "") + "</li>"; }).join("") + "</ul></div>");
+    var rows = [], more = [], n = 0, box = $("news"), cut = cutoff();
+    function li(x) { return "<li>" + esc(x.t) + (arDate(x.date) ? " <small>" + arDate(x.date) + "</small>" : "") + "</li>"; }
+    list().map(function (s) {
+      var c = cinfo(s); if (s.state !== "open" || !c || !c.news) return null;
+      var N = c.news.filter(function (x) { return (x.date || "") >= cut; }).sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); });
+      return N.length ? { s: s, N: N, d: N[0].date || "" } : null;
+    }).filter(Boolean).sort(function (a, b) { return b.d.localeCompare(a.d); }).forEach(function (o, i) {
+      // أحدث مادتين ظاهرين (آخر بند في كل واحدة)، والباقي كله تحت «كل الجديد» عشان الكارت مايطوّلش على الموبايل
+      var h = '<a class="nwh" href="' + link(o.s) + '">' + esc(o.s.name) + "</a>", N = i < 2 ? o.N.slice(1) : o.N;
+      n += o.N.length;
+      if (i < 2) rows.push('<div class="nw">' + h + "<ul>" + li(o.N[0]) + "</ul></div>");
+      if (N.length) more.push('<div class="nw">' + h + "<ul>" + N.map(li).join("") + "</ul></div>");
     });
     box.hidden = !rows.length;
-    box.innerHTML = rows.length ? '<details><summary><h2 id="news-h">جديد في المواد</h2></summary><p class="fine">اللي اتضاف أو اتصلّح آخر أسبوعين. جوّه المادة فيه نقطة حمرا جنب الدرس اللي فيه الجديد.</p>' + rows.join("") + "</details>" : "";
+    box.innerHTML = rows.length ? '<h2 id="news-h"><span class="dot" aria-hidden="true"></span>جديد في المواد</h2><p class="fine">ما أُضيف في آخر ' + NEWS_DAYS + ' أيام. وداخل المادة نقطة حمراء بجانب الدرس الجديد.</p><div class="nws">' + rows.join("") + "</div>" +
+      (more.length ? '<details class="nmore"><summary>كل الجديد (' + n + ")</summary>" + more.join("") + "</details>" : "") : "";
   }
-  // المادة المحفوظة على الجهاز: علامة ✓ صغيرة جنب عدد الدروس (الملف الكامل أو نسخة التجربة)
-  function saved() {
-    if (!window.caches) return;
-    caches.open(CONTENT).then(function (c) {
-      [].forEach.call(document.querySelectorAll("a.course[data-base]"), function (el) {
-        var b = el.getAttribute("data-base");
-        Promise.all([c.match(EP + "/file/" + b + ".html"), c.match(EP + "/trial/" + b + ".html")]).then(function (r) {
-          if (r[0] || r[1]) { el.classList.add("sv"); el.title = "محفوظة على جهازك، وبتفتح من غير نت"; }
-        });
-      });
-    }).catch(function () {});
-  }
+  // علامة «✓» اللي كانت جنب عدد الدروس (المادة محفوظة على الجهاز) اتشالت 2026-11-26: محدش فهمها،
+  // وسطر «الموقع اتحفظ على جهازك… وكل مادة بتتحفظ أول ما تفتحها» اللي تحت بيقول نفس الكلام.
   draw();
   // بالتصريح لو موجود، عشان المواد الخاصة اللي الحساب دخل كودها تيجي معاها
   function pullSubjects() {
@@ -124,7 +156,7 @@
   function pick() {
     picking = true; seen(); root.classList.add("pick");
     $("first").hidden = true;
-    $("courses-h").textContent = "1. اختار مادة";
+    $("courses-t").textContent = "1. اختر مادة"; fold("courses", false);
     $("courses-h").scrollIntoView({ behavior: "smooth", block: "start" });
   }
   function lectures(s, el) {
@@ -134,11 +166,11 @@
     [].forEach.call(document.querySelectorAll(".course.sel"), function (x) { x.classList.remove("sel"); });
     el.classList.add("sel");
     box.hidden = false;
-    box.innerHTML = '<h2 class="sec" id="lp-h">2. اختار محاضرة من ' + esc(s.name) + '</h2><div class="lplist">' + c.lectures.map(function (l) {
+    box.innerHTML = '<h2 class="sec" id="lp-h">2. اختر محاضرة من ' + esc(s.name) + '</h2><div class="lplist">' + c.lectures.map(function (l) {
       var free = reg || tr.indexOf(String(l.n)) >= 0;
       var dr = (c.draft || []).indexOf(String(l.n)) >= 0;
       return '<a class="lp' + (free ? "" : " lock") + '" href="' + link(s) + "#lec=" + encodeURIComponent(l.n) + '"><b>' + esc(l.t) + (dr ? ' <i class="dr">تجريبية</i>' : "") + "</b>" +
-        (reg ? "" : "<span>" + (free ? "مفتوحة من غير حساب" : "بحساب (التسجيل 10 ثواني)") + "</span>") + "</a>";
+        (reg ? "" : "<span>" + (free ? "متاحة دون حساب" : "تحتاج حسابًا (التسجيل في 10 ثوانٍ)") + "</span>") + "</a>";
     }).join("") + "</div>";
     box.scrollIntoView({ behavior: "smooth", block: "start" });
   }
@@ -160,16 +192,16 @@
     }
   });
   var TOUR = [
-    "<b>كل مادة ملف واحد:</b> الدروس بالشرح خطوة خطوة، وكل أسئلة الشيتات والكويزات بحلها.",
-    "<b>تحت كل سؤال:</b> ليه الإجابة الصح صح، وليه كل اختيار تاني غلط.",
-    "<b>النجمة ★ معناها «مهم».</b> والأسئلة اللي غلطت فيها بتتجمع لوحدها، عشان تراجعها قبل الامتحان.",
-    "<b>أول وآخر محاضرة في كل مادة مفتوحين من غير حساب.</b> والتسجيل 10 ثواني: يفتح الباقي، ويحفظ تقدّمك على كل أجهزتك."
+    "<b>كل مادة في ملف واحد:</b> الدروس مشروحة خطوة بخطوة، وكل أسئلة الشيتات والكويزات بحلولها.",
+    "<b>تحت كل سؤال:</b> لماذا الإجابة الصحيحة صحيحة، ولماذا كل اختيار آخر خطأ.",
+    "<b>النجمة ★ تعني «مهم».</b> والأسئلة التي أخطأت فيها تُجمع تلقائيًا لتراجعها قبل الامتحان.",
+    "<b>أول محاضرة وآخر محاضرة في كل مادة متاحتان دون حساب.</b> والتسجيل يستغرق 10 ثوانٍ: يفتح الباقي، ويحفظ تقدّمك على كل أجهزتك."
   ];
   function tour(i) {
     var box = $("tour"), last = i === TOUR.length - 1;
     $("first-b").hidden = true; box.hidden = false;
     box.innerHTML = '<p class="tn">' + (i + 1) + " من " + TOUR.length + '</p><p class="tt">' + TOUR[i] + '</p><div class="row"><button type="button" class="btn" id="t-next">' +
-      (last ? "اختار مادة" : "التالي") + "</button>" + (last ? "" : '<button type="button" class="linkbtn" id="t-skip">تخطّي</button>') + "</div>";
+      (last ? "اختر مادة" : "التالي") + "</button>" + (last ? "" : '<button type="button" class="linkbtn" id="t-skip">تخطّي</button>') + "</div>";
     $("t-next").onclick = function () { if (last) pick(); else tour(i + 1); };
     if (!last) $("t-skip").onclick = pick;
     $("t-next").focus();
@@ -183,26 +215,26 @@
   var qc = (/[?&]code=([A-Za-z0-9-]{4,24})/.exec(location.search) || [])[1];
   if (qc) { set("mst-gcode", qc); try { history.replaceState(null, "", location.pathname); } catch (e) {} }
   function redeem(code, m) {
-    if (!A || !A.on) { if (m) m.textContent = "الكود محتاج الموقع الحقيقي (nooh-ibrahim.github.io)."; return Promise.resolve(); }
+    if (!A || !A.on) { if (m) m.textContent = "الكود يعمل على الموقع الأصلي فقط (nooh-ibrahim.github.io)."; return Promise.resolve(); }
     return A.ensure().then(function (tok) {
       return fetch(EP + "/redeem", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tok: tok, code: code }) })
         .then(function (r) { return r.json().catch(function () { return {}; }); });
     }).then(function (j) {
-      if (j.ok) { try { localStorage.removeItem("mst-gcode"); } catch (e) {} if (m) { m.className = "fine okm"; m.textContent = "✓ اتفتحت: " + j.name + "."; } return pullSubjects(); }
+      if (j.ok) { try { localStorage.removeItem("mst-gcode"); } catch (e) {} if (m) { m.className = "fine okm"; m.textContent = "✓ فُتحت: " + j.name + "."; } return pullSubjects(); }
       if (j.err === "code") { try { localStorage.removeItem("mst-gcode"); } catch (e) {} }
-      if (m) m.textContent = j.err === "many" ? "محاولات كتير غلط. استنى ساعة وجرّب تاني." : j.err === "code" ? "الكود ده مش صح. اتأكد منه من اللي بعتهولك." : j.blocked ? "الوصول مقفول لرقمك. كلّم نوح." : "حصل مشكلة. جرّب تاني.";
+      if (m) m.textContent = j.err === "many" ? "محاولات خاطئة كثيرة. انتظر ساعة ثم حاول مرة أخرى." : j.err === "code" ? "هذا الكود غير صحيح. تأكد منه ممن أرسله إليك." : j.blocked ? "الوصول مغلق لرقمك. تواصل معنا." : "حدثت مشكلة. حاول مرة أخرى.";
     }, function (e) {
-      if (e.message === "noname") { if (m) m.textContent = "الكود محتاج حساب. سجّل الأول، والكود هيتبعت لوحده."; set("mst-gcode", code); if (window.MSTWho) window.MSTWho.open(); }
-      else if (m) m.textContent = "محتاج نت عشان الكود.";
+      if (e.message === "noname") { if (m) m.textContent = "الكود يحتاج حسابًا. سجّل أولًا، وسيُرسل الكود تلقائيًا."; set("mst-gcode", code); if (window.MSTWho) window.MSTWho.open(); }
+      else if (m) m.textContent = "الكود يحتاج اتصالًا بالإنترنت.";
     });
   }
   function pending() { var c = get("mst-gcode"); if (c && get("mst-name")) redeem(c, $("g-msg")); }
   pending();
   addEventListener("mst-sync", pending); // بعد ما يكتب اسمه ورقمه (me.js)
-  $("g-open").addEventListener("click", function () { var b = $("g-box"); b.hidden = !b.hidden; if (!b.hidden) $("g-code").focus(); });
+  $("g-open").addEventListener("click", function () { var b = $("g-box"); b.hidden = !b.hidden; this.setAttribute("aria-expanded", String(!b.hidden)); if (!b.hidden) $("g-code").focus(); });
   $("g-box").addEventListener("submit", function (e) {
     e.preventDefault(); var m = $("g-msg"), v = $("g-code").value.trim(); m.className = "fine"; m.textContent = "";
-    if (v.length < 4) { m.textContent = "اكتب الكود كامل."; return; }
+    if (v.length < 4) { m.textContent = "اكتب الكود كاملًا."; return; }
     m.textContent = "لحظة…"; redeem(v, m);
   });
 
@@ -217,11 +249,11 @@
       btn.disabled = false; seen(); $("join").hidden = true;
       if (window.MSTWho) window.MSTWho.close();
       if (window.MSTHello) window.MSTHello();
-      $("home-msg").textContent = "✓ الجهاز ده اتربط بحسابك" + (r.changed && r.changed.length ? "، وجالك تقدّمك في " + r.changed.length + " مادة." : ".");
+      $("home-msg").textContent = "✓ رُبط هذا الجهاز بحسابك" + (r.changed && r.changed.length ? "، ووصل تقدّمك في " + r.changed.length + " مادة." : ".");
       draw(); pullSubjects();
     }, function (er) {
       btn.disabled = false; m.hidden = false;
-      m.textContent = er.message === "many" ? "محاولات كتير غلط. استنى ساعة وجرّب تاني." : er.message === "blocked" ? "الوصول مقفول للرقم ده. كلّم نوح." : er.message === "code" ? "الكود غلط أو خلص. طلّع كود جديد من الجهاز التاني." : "محتاج نت عشان تربط الجهاز.";
+      m.textContent = er.message === "many" ? "محاولات خاطئة كثيرة. انتظر ساعة ثم حاول مرة أخرى." : er.message === "blocked" ? "الوصول مغلق لهذا الرقم. تواصل معنا." : er.message === "code" ? "الكود خطأ أو انتهت صلاحيته. أنشئ كودًا جديدًا من الجهاز الآخر." : "ربط الجهاز يحتاج اتصالًا بالإنترنت.";
     });
   });
 

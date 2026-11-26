@@ -21,7 +21,7 @@ h1{font-size:1.35rem;margin:0}
 p{color:var(--muted);margin:.4rem 0 0;white-space:pre-line;font-variant-numeric:tabular-nums}
 a{display:inline-block;margin-top:1rem;padding:.55rem 1.4rem;border-radius:1rem;background:var(--btn);color:var(--on);font-weight:700;text-decoration:none}
 </style>
-<script>try{var t=localStorage.getItem("hub-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<script>try{var t=localStorage.getItem("hub-theme")}catch(e){}document.documentElement.setAttribute("data-theme",t==="dark"?"dark":"light");</script>
 <script src="acct.js"></script>
 </head>
 <body>

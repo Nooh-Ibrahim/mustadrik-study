@@ -3,104 +3,127 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>الملفات الدراسية · مُستدرِك</title>
-<meta name="description" content="الملفات الدراسية لدفعة 2030، كلية الذكاء الاصطناعي، جامعة الدلتا. من مُستدرِك.">
+<title>مُستدرِك · Class of AI</title>
+<meta name="description" content="مُستدرِك: شرح كل المواد، وحلول كل الأسئلة. دفعة 2030، كلية الذكاء الاصطناعي، جامعة الدلتا.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="مُستدرِك">
+<meta property="og:locale" content="ar_EG">
+<meta property="og:url" content="https://nooh-ibrahim.github.io/mustadrik-study/">
+<meta property="og:title" content="مُستدرِك · Class of AI">
+<meta property="og:description" content="شرح كل المواد، وحلول كل الأسئلة. دفعة 2030، كلية الذكاء الاصطناعي، جامعة الدلتا.">
+<meta property="og:image" content="https://nooh-ibrahim.github.io/mustadrik-study/icons/og.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ختم Class of AI وشعار مُستدرِك">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="hub-version" content="14">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="الملفات الدراسية">
+<meta name="apple-mobile-web-app-title" content="مُستدرِك">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#F7F3EA" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0B1530" media="(prefers-color-scheme: dark)">
-<script>try{var t=localStorage.getItem("hub-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}
+<meta name="theme-color" content="#F7F3EA">
+<!-- أول مرة: الوضع الفاتح، مهما كان الجهاز غامق. الغامق بس لو الطالب اختاره بنفسه (hub-theme) -->
+<script>try{var t=localStorage.getItem("hub-theme")}catch(e){}document.documentElement.setAttribute("data-theme",t==="dark"?"dark":"light");
 </script>
 <link rel="stylesheet" href="site.css">
 </head>
-<body>
+<body class="home">
 <div class="wrap">
 <nav class="top topnav" aria-label="الموقع">
-  <a class="brand" href="./"><svg class="chip" viewBox="0 0 96 96" aria-hidden="true"><g class="pins" stroke-width="4.5" stroke-linecap="round"><path d="M30 6v12M42 6v12M54 6v12M66 6v12M30 78v12M42 78v12M54 78v12M66 78v12M6 30h12M6 42h12M6 54h12M6 66h12M78 30h12M78 42h12M78 54h12M78 66h12"/></g><rect class="die" x="18" y="18" width="60" height="60" rx="11"/><g class="meem" transform="translate(26 26) scale(1.375)" fill="none" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 16a7 7 0 1 0-7 7"/><path d="M16 21a5 5 0 1 0-5-5"/><path d="M23 16v8"/></g></svg><span>الملفات الدراسية</span></a>
+  <a class="brand" href="./"><svg class="chip" viewBox="0 0 96 96" aria-hidden="true"><g class="pins" stroke-width="4.5" stroke-linecap="round"><path d="M30 6v12M42 6v12M54 6v12M66 6v12M30 78v12M42 78v12M54 78v12M66 78v12M6 30h12M6 42h12M6 54h12M6 66h12M78 30h12M78 42h12M78 54h12M78 66h12"/></g><rect class="die" x="18" y="18" width="60" height="60" rx="11"/><g class="meem" transform="translate(26 26) scale(1.375)" fill="none" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 16a7 7 0 1 0-7 7"/><path d="M16 21a5 5 0 1 0-5-5"/><path d="M23 16v8"/></g></svg><span>مُستدرِك</span></a>
   <a class="nbtn" href="key.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M12.2 12H21M17.5 12v3.2M20.5 12v2.4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span>دليل الرموز</span></a>
   <a class="nbtn" href="account.html" id="nav-me"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.2" r="3.8" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M4.5 20.2c.9-3.6 3.9-5.6 7.5-5.6s6.6 2 7.5 5.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span>حسابك</span></a>
   <button type="button" class="nbtn ic" id="theme" aria-label="الوضع الغامق"></button>
 </nav>
 
-<header class="hero slim">
-  <h1>شرح كل مواد الترم، وكل الأسئلة محلولة</h1>
-  <p class="sub">دفعة 2030 · كلية الذكاء الاصطناعي · جامعة الدلتا</p>
-  <p class="hello" id="hello" hidden>أهلاً يا <b id="hello-name"></b></p>
+<header class="hero seal-top">
+  <h1 class="vh">مُستدرِك: شرح كل مواد الفصل الدراسي لدفعة 2030، كلية الذكاء الاصطناعي، جامعة الدلتا</h1>
+  <img class="seal-hero" src="icons/seal.svg" width="200" height="200" alt="ختم Class of AI: دفعة 2030، كلية الذكاء الاصطناعي، جامعة الدلتا">
 </header>
 
 <main>
+<!-- الشاشة العريضة: «أهلاً» و«أكمل» و«روابط أخرى» في عمود، و«جديد في المواد» جنبهم. الموبايل: تحت بعض، و«روابط أخرى» في الآخر -->
+<div class="dash">
+<div class="dside">
+<p class="hello" id="hello" hidden><span>أهلًا بك يا</span> <b id="hello-name"></b></p>
 <a class="card resume" id="resume" href="./" hidden></a>
 
 <div class="first" id="first" hidden>
   <div class="fb" id="first-b">
-    <button type="button" class="a" id="f-start">ابدأ على طول<small>مادة، وبعدها محاضرة</small></button>
+    <button type="button" class="a" id="f-start">ابدأ مباشرة<small>اختر مادة ثم محاضرة</small></button>
     <button type="button" class="b" id="f-tour">جولة سريعة<small>4 خطوات قصيرة</small></button>
   </div>
   <div class="card tour" id="tour" hidden aria-live="polite"></div>
 </div>
 
-<section class="card who" id="who" aria-labelledby="who-h" hidden>
-  <h2 id="who-h">سجّل في 10 ثواني</h2>
-  <p id="who-why"></p>
-  <form id="who-form" novalidate>
-    <label>الاسم (ثنائي أو تلاتي)<input id="who-name" type="text" autocomplete="name" required></label>
-    <label>رقم الواتساب<input id="who-phone" type="tel" inputmode="numeric" autocomplete="tel" dir="ltr" placeholder="01xxxxxxxxx" required></label>
-    <p class="err" id="who-err" hidden></p>
-    <div class="row"><button type="submit" class="btn">سجّل</button><button type="button" class="btn quiet" id="who-later">مش دلوقتي</button></div>
-  </form>
-  <p class="join-q" id="join-q"><button type="button" class="linkbtn" id="join-open">عندي حساب على جهاز تاني</button></p>
-  <div id="join" class="join" hidden><form id="join-form" novalidate>
-    <p>على الجهاز اللي مسجّل عليه: افتح صفحة <b>«حسابك»</b>، ودوس <b>«اربط جهاز تاني»</b>، واكتب الكود اللي هيظهر هنا:</p>
-    <label>كود الربط (6 أرقام)<input id="join-code" type="text" inputmode="numeric" autocomplete="one-time-code" dir="ltr" maxlength="9" placeholder="123 456"></label>
-    <p class="err" id="join-err" hidden></p>
-    <div class="row"><button type="submit" class="btn">اربط الجهاز ده</button></div>
-  </form></div>
-  <details class="whyd"><summary>ليه الاسم والرقم؟</summary><p class="fine"><b>الاسم</b> عشان نرحّب بيك، وبيتكتب على نسخة المواد اللي بتفتحها.<br><b>والرقم</b> عشان توصلك التحديثات، ونتأكد إنك معانا في الجروب.</p></details>
-</section>
-<p class="fine okm hmsg" id="home-msg" aria-live="polite"></p>
-
-<h2 class="sec sec-c" id="courses-h" tabindex="-1">المواد</h2>
-<div class="courses" id="courses"></div>
-<div id="lecpick" hidden></div>
-<div id="gcourses"></div>
-
-<section class="card reg" id="reg" hidden>
-  <p>سجّل في 10 ثواني: كل المحاضرات، وتقدّمك على كل أجهزتك.</p>
-  <button type="button" class="btn" id="reg-go">سجّل</button>
-</section>
-
-<section class="card news" id="news" aria-labelledby="news-h" hidden></section>
-
-<nav class="hlinks" aria-label="لينكات">
-  <a href="guide.html">شرح الموقع</a>
-  <a href="key.html">دليل الرموز</a>
-  <a href="account.html">حسابك وأجهزتك</a>
-  <a href="guide.html#s15">ضيف الموقع لموبايلك</a>
-  <button type="button" id="g-open">عندي كود مادة</button>
+<div class="dmore">
+<h2 class="sec" id="more-h">روابط أخرى</h2>
+<nav class="hlinks" aria-labelledby="more-h">
+  <a href="guide.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C10.5 5 8.3 4.5 4 4.5v13c4.3 0 6.5.5 8 2 1.5-1.5 3.7-2 8-2v-13c-4.3 0-6.5.5-8 2Zm0 0v13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span>شرح الموقع</span></a>
+  <a href="key.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M12.2 12H21M17.5 12v3.2M20.5 12v2.4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span>دليل الرموز</span></a>
+  <a href="account.html"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.2" r="3.8" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M4.5 20.2c.9-3.6 3.9-5.6 7.5-5.6s6.6 2 7.5 5.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span>حسابك وأجهزتك</span></a>
+  <a href="guide.html#s15"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 8.5v6M9 11.5h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>أضف الموقع إلى هاتفك</span></a>
+  <button type="button" id="g-open" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7 12h.01M10.5 12h.01M14 12h.01M17.5 12h.01" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg><span>لديّ كود مادة</span></button>
 </nav>
 <div class="gcode">
   <form id="g-box" class="row" hidden novalidate><label>الكود<input id="g-code" type="text" dir="ltr" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="24" placeholder="ABC-12345"></label><button type="submit" class="btn">افتح</button></form>
   <p class="fine" id="g-msg" aria-live="polite"></p></div>
-<p class="offline" id="offline">✓ الموقع اتحفظ على جهازك، وبيفتح من غير نت. وكل مادة بتتحفظ أول ما تفتحها.</p>
+</div>
+</div>
+
+<section class="card news" id="news" aria-labelledby="news-h" hidden></section>
+</div>
+
+<section class="card who" id="who" aria-labelledby="who-h" hidden>
+  <h2 id="who-h">سجّل في 10 ثوانٍ</h2>
+  <p id="who-why"></p>
+  <form id="who-form" novalidate>
+    <label>الاسم (ثنائي أو ثلاثي)<input id="who-name" type="text" autocomplete="name" required></label>
+    <label>رقم الواتساب<input id="who-phone" type="tel" inputmode="numeric" autocomplete="tel" dir="ltr" placeholder="01xxxxxxxxx" required></label>
+    <p class="err" id="who-err" hidden></p>
+    <div class="row"><button type="submit" class="btn">سجّل</button><button type="button" class="btn quiet" id="who-later">ليس الآن</button></div>
+  </form>
+  <p class="join-q" id="join-q"><button type="button" class="linkbtn" id="join-open">لديّ حساب على جهاز آخر</button></p>
+  <div id="join" class="join" hidden><form id="join-form" novalidate>
+    <p>على الجهاز المسجَّل عليه: افتح صفحة <b>«حسابك»</b>، واضغط <b>«اربط جهاز تاني»</b>، واكتب الكود الذي سيظهر هناك:</p>
+    <label>كود الربط (6 أرقام)<input id="join-code" type="text" inputmode="numeric" autocomplete="one-time-code" dir="ltr" maxlength="9" placeholder="123 456"></label>
+    <p class="err" id="join-err" hidden></p>
+    <div class="row"><button type="submit" class="btn">اربط هذا الجهاز</button></div>
+  </form></div>
+  <details class="whyd"><summary>لماذا الاسم والرقم؟</summary><p class="fine"><b>الاسم</b> لنرحّب بك، ويُكتب على نسخة المواد التي تفتحها.<br><b>والرقم</b> لتصلك التحديثات، ولنتأكد أنك معنا في المجموعة.</p></details>
+</section>
+<p class="fine okm hmsg" id="home-msg" aria-live="polite"></p>
+
+<h2 class="sec sec-c fold-h" id="courses-h" tabindex="-1"><button type="button" class="fold" id="courses-f" aria-expanded="true" aria-controls="courses"><span id="courses-t">مواد الكلية</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9.5l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></h2>
+<div class="courses" id="courses"></div>
+<div id="lecpick" hidden></div>
+<div id="gcourses"></div>
+<h2 class="sec fold-h" id="tracks-h" hidden><button type="button" class="fold" id="tracks-f" aria-expanded="true" aria-controls="tracks"><span>كورسات</span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9.5l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></h2>
+<p class="secsub" id="tracks-p" hidden>خارج مواد الكلية: كورسات نذاكرها أسبوعًا بأسبوع.</p>
+<div class="courses" id="tracks" hidden></div>
+
+<section class="card reg" id="reg" hidden>
+  <p>سجّل في 10 ثوانٍ: تُفتح كل المحاضرات، ويُحفظ تقدّمك على كل أجهزتك.</p>
+  <button type="button" class="btn" id="reg-go">سجّل</button>
+</section>
+
+<p class="offline" id="offline">✓ حُفظ الموقع على جهازك، ويفتح دون إنترنت. وكل مادة تُحفظ عند أول فتح لها.</p>
 </main>
 
 <footer class="credit" aria-labelledby="cr-h">
-  <svg class="chip chip-f" viewBox="0 0 96 96" role="img" aria-label="شعار الملفات الدراسية: ميم مُستدرِك جوّه شريحة"><g class="pins" stroke-width="4.5" stroke-linecap="round"><path d="M30 6v12M42 6v12M54 6v12M66 6v12M30 78v12M42 78v12M54 78v12M66 78v12M6 30h12M6 42h12M6 54h12M6 66h12M78 30h12M78 42h12M78 54h12M78 66h12"/></g><rect class="die" x="18" y="18" width="60" height="60" rx="11"/><g class="meem" transform="translate(26 26) scale(1.375)" fill="none" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 16a7 7 0 1 0-7 7"/><path d="M16 21a5 5 0 1 0-5-5"/><path d="M23 16v8"/></g></svg>
-  <img class="seal-f" src="icons/seal.svg" width="88" height="88" alt="ختم دفعة 2030: كلية الذكاء الاصطناعي، جامعة الدلتا">
-  <h2 id="cr-h">من نوح</h2>
-  <p>لو لقيت غلط أو عندك اقتراح، كلّمني:</p>
+  <svg class="chip chip-f" viewBox="0 0 96 96" role="img" aria-label="شعار مُستدرِك: ميم داخل شريحة"><g class="pins" stroke-width="4.5" stroke-linecap="round"><path d="M30 6v12M42 6v12M54 6v12M66 6v12M30 78v12M42 78v12M54 78v12M66 78v12M6 30h12M6 42h12M6 54h12M6 66h12M78 30h12M78 42h12M78 54h12M78 66h12"/></g><rect class="die" x="18" y="18" width="60" height="60" rx="11"/><g class="meem" transform="translate(26 26) scale(1.375)" fill="none" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 16a7 7 0 1 0-7 7"/><path d="M16 21a5 5 0 1 0-5-5"/><path d="M23 16v8"/></g></svg>  <h2 id="cr-h">من مُستدرِك</h2>
+  <p>إن وجدت خطأً أو لديك اقتراح، تواصل معنا:</p>
   <div class="socs"><a class="soc wa" href="https://wa.me/201114232172" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2A9.8 9.8 0 0 0 3.6 17l-1.3 4.8 4.9-1.3A9.8 9.8 0 1 0 12 2.2Z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8.6 7.4c.3-.6.6-.6.9-.6h.6c.2 0 .4.1.5.4l.8 1.9c.1.2 0 .5-.1.7l-.6.7c.6 1.2 1.6 2.2 2.8 2.8l.7-.6c.2-.2.5-.2.7-.1l1.9.8c.3.1.4.3.4.6v.6c0 .4-.1.7-.6.9-1.2.6-3 .3-4.8-1.1a9.7 9.7 0 0 1-3.2-3.9c-.6-1.4-.6-2.4 0-3.1Z" fill="currentColor"/></svg><span>WhatsApp</span></a><a class="soc ig" href="https://www.instagram.com/nooh.m.ibrahim/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="17.4" cy="6.6" r="1.2" fill="currentColor"/></svg><span>Instagram</span></a><a class="soc fb" href="https://www.facebook.com/profile.php?id=61594278003270" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.6 21v-7.6h2.6l.4-3h-3V8.5c0-.9.3-1.5 1.5-1.5h1.6V4.3a21 21 0 0 0-2.3-.1c-2.3 0-3.9 1.4-3.9 4v2.2H8v3h2.5V21Z" fill="currentColor"/></svg><span>Facebook</span></a><a class="soc li" href="https://www.linkedin.com/in/nooh-m-ibrahim/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7.3 10v7M7.3 7v.01M11 17v-7M11 13c0-1.8 1-3 2.6-3S16.7 11 16.7 13v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>LinkedIn</span></a><a class="soc gh" href="https://github.com/Nooh-Ibrahim" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5a9.5 9.5 0 0 0-3 18.5c.5.1.7-.2.7-.5v-1.7c-2.6.6-3.2-1.2-3.2-1.2-.4-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.9.8.1-.6.3-1.1.6-1.3-2.1-.2-4.3-1-4.3-4.7 0-1 .4-1.9 1-2.6-.1-.2-.4-1.2.1-2.5 0 0 .8-.3 2.6 1a9 9 0 0 1 4.8 0c1.8-1.3 2.6-1 2.6-1 .5 1.3.2 2.3.1 2.5.6.7 1 1.6 1 2.6 0 3.7-2.2 4.5-4.3 4.7.3.3.6.9.6 1.8v2.6c0 .3.2.6.7.5A9.5 9.5 0 0 0 12 2.5Z" fill="currentColor"/></svg><span>GitHub</span></a></div>
-  <p class="ver" id="ver">إصدار الموقع: 17</p>
+  <p class="ver" id="ver">إصدار الموقع: 18</p>
 </footer>
 </div>
 
 <script src="ui.js"></script>
+<script src="fx.js" defer></script>
 <script>
 // الرسالة بتظهر لما الصفحة الرئيسية تتحفظ (المواد: home.js)
 (function check(n) {

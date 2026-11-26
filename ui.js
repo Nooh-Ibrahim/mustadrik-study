@@ -10,8 +10,10 @@
   }
   // الزرار أيقونة (شمس أو قمر) والكلام للقارئ الصوتي
   function label() {
-    if (!btn) return;
     var d = isDark();
+    // لون شريط الموبايل اللي فوق يمشي مع الوضع اللي في الصفحة، مش مع إعداد الجهاز (الموقع بيفتح فاتح أول مرة، 2026-11-26)
+    [].forEach.call(document.querySelectorAll('meta[name="theme-color"]'), function (m) { m.removeAttribute("media"); m.setAttribute("content", d ? "#0B1530" : "#F7F3EA"); });
+    if (!btn) return;
     btn.setAttribute("aria-label", d ? "الوضع الفاتح" : "الوضع الغامق");
     btn.title = btn.getAttribute("aria-label");
     btn.innerHTML = d
