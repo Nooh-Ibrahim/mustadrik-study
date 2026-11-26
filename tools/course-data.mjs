@@ -10,7 +10,7 @@ import TEXT from "./labs-text.mjs";
 const HUB = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const BUILD = "F:/آخر/Claude/study/build";
 const SHOTS = process.argv.includes("--shots");
-const COURSES = ["physics", "cs", "calc", "linalg", "elec", "english"];
+const COURSES = ["physics", "cs", "calc", "linalg", "elec", "english", "cs50"];
 const B = await open();
 
 // بيتنفّذ جوّه ملف المادة
