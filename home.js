@@ -1,5 +1,5 @@
 // الصفحة الرئيسية (فابل 2، 2026-11-16): «كمّل من مكان ما وقفت»، وأول مرة («ابدأ على طول» أو «جولة سريعة»)،
-// وكروت المواد (من السيرفر، عشان أي مادة نوح يضيفها من صفحة الإدارة تظهر لوحدها)، وكود المادة الخاصة.
+// وكروت المواد (من السيرفر، عشان أي مادة نوح يضيفها من صفحة الإدارة تظهر لوحدها). وكود المادة الخاصة في صفحة «حسابك» (gcode.js).
 // الكارت كله مكان دوس واحد بيفتح المادة، وعليه رقم تقدّم واحد. كارت «حسابك على أكتر من جهاز» اتنقل لصفحة «حسابك» (link.js).
 // لستة المواد بتتحفظ في localStorage (mst-subjects)، فالكروت بتظهر من غير نت.
 (function () {
@@ -37,7 +37,7 @@
   function card(s) {
     var c = s.code.toLowerCase(), ci = cinfo(s), p = prog(s);
     var head = (s.grp ? "" : '<span class="code en">' + esc(s.code) + "</span>") + '<h3 id="c-' + c + '">' + esc(s.name) + "</h3>" +
-      (ci && ci.counts ? '<span class="cmeta">' + ci.counts.lessons + " درس · " + ci.counts.q + " سؤال</span>" : "");
+      (ci && ci.counts ? '<span class="cmeta">' + ci.counts.lessons + " درس · " + ci.counts.q + " سؤال</span>" : "") + last(ci);
     if (s.state !== "open") return '<div class="card course soon" data-base="' + esc(s.base) + '">' + head + '<span class="cst">قريباً</span></div>';
     // بدأ المادة (حل سؤال أو فتح درس): شريط تقدّم و«كمّل». لسه: «ابدأ»
     var on = p.a > 0 || !!(getJ("mst-last") || {})[s.skey];
@@ -46,11 +46,29 @@
         '<span class="cfoot"><span class="cst">' + (p.pct ? "حللت " + p.pct + "% من الأسئلة" : "لم تحل أسئلة بعد") + '</span><span class="cgo">أكمل</span></span>'
         : '<span class="cfoot"><span class="cgo new">ابدأ</span></span>') + "</a>";
   }
+  // (طلب نوح 2026-11-28، بند 27، بدل قسم «جديد في المواد») سطرين في الكارت: آخر محاضرة اتضافت، وآخر شيت أو Assignment.
+  // بيفضلوا موجودين على طول (مش آخر كام يوم بس). البيانات من data/courses.json (latest، tools/course-data.mjs).
+  function last(ci) {
+    var L = ci && ci.latest; if (!L) return "";
+    var h = "";
+    if (L.lec) {
+      var m = /^(Week|Session)/i.exec(L.lec.t), k = m ? (/^w/i.test(m[1]) ? "آخر أسبوع" : "آخر سيشن") : "آخر محاضرة";
+      var t = String(L.lec.t).replace(/^[^:]*:\s*/, "");
+      h += '<span class="clast"><i>' + k + ":</i> " + esc(L.lec.n) + " · " + esc(t) + "</span>";
+    }
+    if (L.sheets && L.sheets.length) h += '<span class="clast"><i>آخر شيت:</i> ' + L.sheets.map(esc).join(" · ") + "</span>";
+    return h ? '<span class="clasts">' + h + "</span>" : "";
+  }
   // الكورسات اللي برّه مواد الكلية (CS50x و ICPC): قسم «كورسات» لوحده. s.kind === "course" من السيرفر بيكفي لأي كورس جديد
   var TRACKS = { CS50x: 1, ICPC: 1 };
   function isTrack(s) { return s.kind === "course" || !!TRACKS[s.code]; }
+  // (طلب نوح 2026-11-28، بند 28) مقررات كلية الهندسة: ظاهرة للكل، في الآخر، ومقفولة بالسهم كل مرة الصفحة تفتح.
+  // grp "eng" لسه بييجي مع الحسابات اللي دخلت الكود قبل كده، فبيتعرض هنا برضه مش تحت اسم المجموعة.
+  var ENG = { ENGIT: 1 };
+  function isEng(s) { return s.kind === "eng" || s.grp === "eng" || !!ENG[s.code]; }
+  var engOpen = false;
   // المواد الخاصة (s.grp، بكود): كل مجموعة تحت عنوانها، ومواد الدفعة تحت «مواد الذكاء الاصطناعي». ومن غير كود: زي الأول بالظبط.
-  function groups() { var g = getJ("mst-groups"); return g && g.length ? g : []; }
+  function groups() { var g = getJ("mst-groups"); return g && g.length ? g.filter(function (x) { return x.grp !== "eng"; }) : []; }
   var picking = false;
   // سهم جنب «مواد الكلية» و«كورسات» بيطوي القسم كله، عشان اللي عايز ينزل للي تحت يوصل بسرعة (طلب نوح 2026-11-26).
   // الطيّ بيتحفظ على الجهاز (home-fold)
@@ -62,22 +80,28 @@
       b.setAttribute("aria-expanded", String(!shut));
       x[1].forEach(function (id) { $(id).hidden = shut || none; });
     });
+    var noEng = $("eng-h").hidden;
+    $("eng-f").setAttribute("aria-expanded", String(engOpen));
+    $("eng").hidden = $("eng-p").hidden = !engOpen || noEng;
   }
   function fold(name, shut) { var F = folds(); if (shut) F[name] = 1; else delete F[name]; set("home-fold", JSON.stringify(F)); paintFold(); }
   ["courses", "tracks"].forEach(function (n) { $(n + "-f").addEventListener("click", function () { fold(n, this.getAttribute("aria-expanded") === "true"); }); });
+  $("eng-f").addEventListener("click", function () { engOpen = !engOpen; paintFold(); });
   function draw() {
     var l = list(), G = groups().filter(function (g) { return l.some(function (s) { return s.grp === g.grp; }); });
-    var T = l.filter(function (s) { return !s.grp && isTrack(s); });
-    $("courses").innerHTML = l.filter(function (s) { return !s.grp && !isTrack(s); }).map(card).join("");
-    $("courses-t").textContent = picking ? "1. اختر مادة" : "مواد الكلية";
+    var T = l.filter(function (s) { return !s.grp && !isEng(s) && isTrack(s); }), E = l.filter(isEng);
+    $("courses").innerHTML = l.filter(function (s) { return !s.grp && !isEng(s) && !isTrack(s); }).map(card).join("");
+    $("courses-t").textContent = picking ? "1. اختر مادة" : "المقررات الدراسية";
+    $("eng").innerHTML = E.map(card).join("");
+    $("eng-h").hidden = !E.length;
     if (picking) fold("courses", false);
     $("tracks").innerHTML = T.map(card).join("");
     $("tracks-h").hidden = !T.length;
     paintFold();
     $("gcourses").innerHTML = G.map(function (g) {
-      return '<h2 class="sec">' + esc(g.name) + '</h2><div class="courses">' + l.filter(function (s) { return s.grp === g.grp; }).map(card).join("") + "</div>";
+      return '<h2 class="sec">' + esc(g.name) + '</h2><div class="courses">' + l.filter(function (s) { return s.grp === g.grp && !isEng(s); }).map(card).join("") + "</div>";
     }).join("");
-    resume(); news();
+    resume();
   }
 
   // ---------- كمّل من مكان ما وقفت ----------
@@ -100,31 +124,7 @@
       '<span class="rgo">أكمل</span>';
   }
 
-  // كارت «جديد في المواد»: البنود العلمية من سجل التحديثات (news في data/courses.json، آخر أسبوعين).
-  // فوق المواد ومفتوح (طلب نوح 2026-11-26): آخر جديد في كل مادة ظاهر، والباقي تحت «كل الجديد».
-  var MON = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
-  function arDate(d) { var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(d || ""); return m ? (+m[3]) + " " + MON[+m[2] - 1] : ""; }
-  // آخر 5 أيام بس (طلب نوح 2026-11-26)، بتاريخ الجهاز
-  var NEWS_DAYS = 5;
-  function cutoff() { var d = new Date(Date.now() - NEWS_DAYS * 864e5); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
-  function news() {
-    var rows = [], more = [], n = 0, box = $("news"), cut = cutoff();
-    function li(x) { return "<li>" + esc(x.t) + (arDate(x.date) ? " <small>" + arDate(x.date) + "</small>" : "") + "</li>"; }
-    list().map(function (s) {
-      var c = cinfo(s); if (s.state !== "open" || !c || !c.news) return null;
-      var N = c.news.filter(function (x) { return (x.date || "") >= cut; }).sort(function (a, b) { return (b.date || "").localeCompare(a.date || ""); });
-      return N.length ? { s: s, N: N, d: N[0].date || "" } : null;
-    }).filter(Boolean).sort(function (a, b) { return b.d.localeCompare(a.d); }).forEach(function (o, i) {
-      // أحدث مادتين ظاهرين (آخر بند في كل واحدة)، والباقي كله تحت «كل الجديد» عشان الكارت مايطوّلش على الموبايل
-      var h = '<a class="nwh" href="' + link(o.s) + '">' + esc(o.s.name) + "</a>", N = i < 2 ? o.N.slice(1) : o.N;
-      n += o.N.length;
-      if (i < 2) rows.push('<div class="nw">' + h + "<ul>" + li(o.N[0]) + "</ul></div>");
-      if (N.length) more.push('<div class="nw">' + h + "<ul>" + N.map(li).join("") + "</ul></div>");
-    });
-    box.hidden = !rows.length;
-    box.innerHTML = rows.length ? '<h2 id="news-h"><span class="dot" aria-hidden="true"></span>جديد في المواد</h2><p class="fine">ما أُضيف في آخر ' + NEWS_DAYS + ' أيام. وداخل المادة نقطة حمراء بجانب الدرس الجديد.</p><div class="nws">' + rows.join("") + "</div>" +
-      (more.length ? '<details class="nmore"><summary>كل الجديد (' + n + ")</summary>" + more.join("") + "</details>" : "") : "";
-  }
+  // قسم «جديد في المواد» اتشال 2026-11-28 (طلب نوح، بند 27): مكانه سطرين في كارت كل مادة (last).
   // علامة «✓» اللي كانت جنب عدد الدروس (المادة محفوظة على الجهاز) اتشالت 2026-11-26: محدش فهمها،
   // وسطر «الموقع اتحفظ على جهازك… وكل مادة بتتحفظ أول ما تفتحها» اللي تحت بيقول نفس الكلام.
   draw();
@@ -210,33 +210,8 @@
   $("f-start").addEventListener("click", pick);
   $("f-tour").addEventListener("click", function () { tour(0); });
 
-  // ---------- كود مادة خاصة (مثلاً مواد الهندسة) ----------
-  // اللينك ممكن يبقى فيه الكود (?code=...): بيتحفظ، ويتبعت أول ما يبقى فيه اسم وتصريح (حتى لو سجّل بعدين)
-  var qc = (/[?&]code=([A-Za-z0-9-]{4,24})/.exec(location.search) || [])[1];
-  if (qc) { set("mst-gcode", qc); try { history.replaceState(null, "", location.pathname); } catch (e) {} }
-  function redeem(code, m) {
-    if (!A || !A.on) { if (m) m.textContent = "الكود يعمل على الموقع الأصلي فقط (nooh-ibrahim.github.io)."; return Promise.resolve(); }
-    return A.ensure().then(function (tok) {
-      return fetch(EP + "/redeem", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ tok: tok, code: code }) })
-        .then(function (r) { return r.json().catch(function () { return {}; }); });
-    }).then(function (j) {
-      if (j.ok) { try { localStorage.removeItem("mst-gcode"); } catch (e) {} if (m) { m.className = "fine okm"; m.textContent = "✓ فُتحت: " + j.name + "."; } return pullSubjects(); }
-      if (j.err === "code") { try { localStorage.removeItem("mst-gcode"); } catch (e) {} }
-      if (m) m.textContent = j.err === "many" ? "محاولات خاطئة كثيرة. انتظر ساعة ثم حاول مرة أخرى." : j.err === "code" ? "هذا الكود غير صحيح. تأكد منه ممن أرسله إليك." : j.blocked ? "الوصول مغلق لرقمك. تواصل معنا." : "حدثت مشكلة. حاول مرة أخرى.";
-    }, function (e) {
-      if (e.message === "noname") { if (m) m.textContent = "الكود يحتاج حسابًا. سجّل أولًا، وسيُرسل الكود تلقائيًا."; set("mst-gcode", code); if (window.MSTWho) window.MSTWho.open(); }
-      else if (m) m.textContent = "الكود يحتاج اتصالًا بالإنترنت.";
-    });
-  }
-  function pending() { var c = get("mst-gcode"); if (c && get("mst-name")) redeem(c, $("g-msg")); }
-  pending();
-  addEventListener("mst-sync", pending); // بعد ما يكتب اسمه ورقمه (me.js)
-  $("g-open").addEventListener("click", function () { var b = $("g-box"); b.hidden = !b.hidden; this.setAttribute("aria-expanded", String(!b.hidden)); if (!b.hidden) $("g-code").focus(); });
-  $("g-box").addEventListener("submit", function (e) {
-    e.preventDefault(); var m = $("g-msg"), v = $("g-code").value.trim(); m.className = "fine"; m.textContent = "";
-    if (v.length < 4) { m.textContent = "اكتب الكود كاملًا."; return; }
-    m.textContent = "لحظة…"; redeem(v, m);
-  });
+  // كود المادة الخاصة اتنقل لصفحة «حسابك» (gcode.js، طلب نوح 2026-11-28، بند 31). بعد ما الكود يفتح مادة: الكروت تترسم تاني.
+  addEventListener("mst-subjects", draw);
 
   // ---------- «عندي حساب على جهاز تاني» (من كارت التسجيل) ----------
   $("join-open").addEventListener("click", function () { $("join").hidden = false; $("join-code").focus(); });

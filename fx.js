@@ -21,7 +21,10 @@
     svg.style.display = "none"; // عشان طول الرسمة القديمة مايدخلش في طول الصفحة
     var W = doc.clientWidth, H = Math.max(doc.scrollHeight, innerHeight);
     svg.style.display = "";
-    if (W === lastW && Math.abs(H - lastH) < 40) return;
+    // (سؤال نوح 2026-11-28) الرسمة كانت بتترسم من الأول على قد طول الصفحة كل ما تقصر أو تطول، فلما قسم يتقفل
+    // كانت الخطوط بتقل، ولما يتفتح بتزيد. دلوقتي: بتكبر بس لو الصفحة طولت، ومابتصغرش (نفس العرض = نفس الرسمة).
+    // الجزء اللي تحت آخر الصفحة بيتقص بس (overflow:hidden في site.css)، عشان الصفحة ماتطولش بسبب الرسمة.
+    if (W === lastW && H < lastH + 40) { svg.setAttribute("height", H); svg.setAttribute("viewBox", "0 0 " + W + " " + H); return; }
     lastW = W; lastH = H;
     svg.setAttribute("width", W); svg.setAttribute("height", H); svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     var chip = document.querySelector(".topnav .brand .chip, .chip");

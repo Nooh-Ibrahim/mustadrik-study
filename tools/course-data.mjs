@@ -10,7 +10,7 @@ import TEXT from "./labs-text.mjs";
 const HUB = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const BUILD = "F:/آخر/Claude/study/build";
 const SHOTS = process.argv.includes("--shots");
-const COURSES = ["physics", "cs", "calc", "linalg", "elec", "english", "cs50", "icpc"];
+const COURSES = ["physics", "cs", "calc", "linalg", "elec", "english", "cs50", "icpc", "eng"];
 const B = await open();
 
 // بيتنفّذ جوّه ملف المادة
@@ -28,9 +28,25 @@ const READ = `(function(){
   var C=window.COURSE||{}, L=C.lectures||{}, Q=window.QS||[];
   return {lede:T(document.querySelector(".lede")), h1:T(document.querySelector(".titles h1")), en:T(document.querySelector(".h1en")),
     lectures:Object.keys(L).map(function(k){return {n:k,t:L[k].title,short:L[k].short,en:L[k].en,lessons:secs.filter(function(s){return s.dataset.lec===k}).map(function(s){return s.dataset.title})}}),
-    lessons:secs.length, q:Q.length, mcq:Q.filter(function(q){return q.o}).length, plots:document.querySelectorAll("[data-plot]").length, labs:labs};
+    lessons:secs.length, src:C.sources||{}, srcG:C.srcGroups||{}, srcN:C.srcNames||{}, q:Q.length, mcq:Q.filter(function(q){return q.o}).length, plots:document.querySelectorAll("[data-plot]").length, labs:labs};
 })()`;
 
+// (طلب نوح 2026-11-28، بند 27) سطرين في كارت المادة: آخر محاضرة اتضافت، وآخر شيت أو Assignment.
+// آخر محاضرة: آخر محاضرة مرقّمة فيها دروس. والشيت: أكبر رقم شيت وأكبر رقم Assignment في مصادر البنك (نفس تقسيم المحرّك للمصادر).
+// المادة اللي مصادرها مافيهاش شيتات بأرقام: تقدر تكتبها بإيدها في tools/labs-text.mjs (_sheets: ["..."]).
+function latest(d, tx) {
+  const num = d.lectures.filter((l) => /^\d+$/.test(l.n) && l.lessons.length);
+  const L = num.length ? num.reduce((a, b) => (+b.n > +a.n ? b : a)) : null;
+  let sh = null, as = null, m;
+  for (const k of Object.keys(d.src)) {
+    const n = String(d.srcN[k] || d.src[k] || "") + " " + k, g = d.srcG[k];
+    if (g && g !== "sheet") continue;
+    if ((m = /assignment\s*#?\s*(\d+)/i.exec(n))) { if (!as || +m[1] > as) as = +m[1]; continue; }
+    if ((m = /sheet[\s_#-]*(\d+)|شيت\s*(\d+)/i.exec(n))) { const v = +(m[1] || m[2]); if (sh == null || v > sh) sh = v; }
+  }
+  const sheets = tx._sheets || [sh != null ? "الشيت " + sh : "", as ? "Assignment " + as : ""].filter(Boolean);
+  return { lec: L ? { n: L.n, t: L.t } : null, sheets };
+}
 const out = { gen: new Date().toISOString().slice(0, 10), courses: {} };
 const shotsDir = path.join(HUB, "img", "labs"); if (SHOTS) fs.mkdirSync(shotsDir, { recursive: true });
 for (const c of COURSES) {
@@ -77,6 +93,7 @@ for (const c of COURSES) {
     // (فابل 2) المحاضرات المفتوحة من غير حساب (نفس قاعدة build/tools/trial.mjs)، والمحاضرات «التجريبية» (draft في config.json)
     trial: cfg.trial === false || cfg.grp ? [] : Array.isArray(cfg.trial) && cfg.trial.length ? cfg.trial.map(String) : ((n) => (n.length ? [...new Set([n[0], n[n.length - 1]])] : []))(d.lectures.filter((l) => /^\d+$/.test(l.n) && +l.n >= 1 && l.lessons.length).map((l) => l.n)),
     draft: (cfg.draft || []).map(String),
+    latest: latest(d, tx),
     // كارت «جديد» في الرئيسية (جلسة الدمج 2026-11-09): البنود العلمية (type مش sys) من آخر 14 يوم، 4 بالكتير
     news: cl.filter((e) => Date.now() - Date.parse(e.date) < 14 * 864e5).flatMap((e) => e.items.filter((x) => x && typeof x === "object" && x.type !== "sys").map((x) => ({ t: String(x.t || "").replace(/<[^>]+>/g, ""), date: e.date, lec: x.lec || "", key: x.key || "" }))).slice(0, 4),
   };

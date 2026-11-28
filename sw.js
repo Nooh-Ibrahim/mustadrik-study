@@ -9,7 +9,7 @@
 // - مابيلمسش localStorage خالص، فالتقدّم بتاع المواد بيفضل زي ما هو.
 // الأسامي فيها mustadrak-study لأن كل مواقع nooh-ibrahim.github.io بتتشارك نفس المخزن.
 // (الموقع اتنقل لـ /mustadrik-study/ في الإصدار 6، والأسامي فضلت زي ما هي عشان المواد المحفوظة على الأجهزة تفضل.)
-const VERSION = 19;
+const VERSION = 20;
 const PREFIX = "mustadrak-study-";
 const SHELL = PREFIX + "v" + VERSION;
 const CONTENT = PREFIX + "content";
@@ -28,6 +28,7 @@ const FILES = [
   "ui.js",
   "fx.js",
   "pdf.js",
+  "gcode.js",
   "course.js",
   "account.js",
   "link.js",
@@ -44,7 +45,8 @@ const FILES = [
   "fonts/plex-ar-400.woff2",
   "fonts/plex-ar-700.woff2",
   "fonts/plex-lat-400.woff2",
-  "fonts/plex-lat-700.woff2"
+  "fonts/plex-lat-700.woff2",
+  "fonts/reemkufi-ar-700.woff2"
 ];
 
 self.addEventListener("install", (e) => {

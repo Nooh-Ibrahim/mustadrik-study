@@ -48,7 +48,7 @@
     $("bk-code").value = b.code;
   }
   function backupIn() {
-    $("bk-box").innerHTML = '<p>الصق الكود (كود كل المواد من هنا، أو كود مادة واحدة من «انقل تقدّمي» داخل المادة أو من رابط كلود):</p><textarea class="xcode" dir="ltr" rows="4" id="bk-paste" placeholder="MST:..."></textarea>' +
+    $("bk-box").innerHTML = '<p>الصق الكود (كود كل المواد من هنا، أو كود مادة واحدة من «انقل تقدّمي» داخل المادة):</p><textarea class="xcode" dir="ltr" rows="4" id="bk-paste" placeholder="MST:..."></textarea>' +
       '<div class="chips"><label class="chip"><input type="radio" name="bk-mode" value="merge" checked> ادمج (يُؤخذ الأحدث لكل سؤال)</label><label class="chip"><input type="radio" name="bk-mode" value="replace"> استبدل تقدّمي في المواد التي في الكود</label></div><div class="row"><button type="button" class="btn" id="bk-apply">استرجع</button></div><p class="fine" id="bk-msg" aria-live="polite"></p>';
   }
   function backupApply() {

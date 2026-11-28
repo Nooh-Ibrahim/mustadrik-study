@@ -502,7 +502,8 @@ main>.offline{margin-top:1rem}
 .topnav .brand span{font-size:1.25rem;letter-spacing:0}
 @media (max-width:520px){.home .topnav .brand span{display:inline}}
 /* الموبايل: «دليل الرموز» اللي فوق بيستخبى في الرئيسية بس (موجود تحت في «حاجات تانية»)، عشان «مُستدرِك» يفضل مكتوب */
-@media (max-width:520px){.home .topnav .nbtn[href="key.html"]{display:none}}
+/* الموبايل في الرئيسية: «دليل الموقع» أيقونة بس (عشان اسم مُستدرِك يفضل ظاهر)، و«روابط أخرى» اتشالت 2026-11-28 */
+@media (max-width:520px){.home .topnav .nbtn[href="guide.html"] span{display:none}.home .topnav .nbtn[href="guide.html"]{width:2.75rem;padding:0;justify-content:center}}
 /* كمّل من مكان ما وقفت */
 .resume .rbar{grid-column:1;display:flex;flex-direction:column;gap:.15rem;margin-top:.35rem}
 .resume .rbar .cbar{display:block;height:.45rem;border-radius:1rem;background:var(--rule);overflow:hidden;margin:0;max-width:22rem}
@@ -546,7 +547,7 @@ main>.offline{margin-top:1rem}
 /* ===== 2026-11-26 (الجولة 2): خلفية الإلكترونات، و«أهلًا»، والشاشة العريضة، وطيّ الأقسام ===== */
 /* خلفية الموقع: لون الورق، والمسارات والإلكترونات من fx.js (بدل رسمة الشريحة المتكررة) */
 body.fx{background:var(--paper);position:relative}
-.fxbg{position:absolute;top:0;left:0;z-index:-1;pointer-events:none;overflow:visible}
+.fxbg{position:absolute;top:0;left:0;z-index:-1;pointer-events:none;overflow:hidden}
 .fxbg .ln path{fill:none;stroke:var(--ink);stroke-opacity:.11;stroke-width:2;stroke-linejoin:round}
 .fxbg .via circle{fill:var(--paper);stroke:var(--gold);stroke-opacity:.55;stroke-width:1.6}
 .fxbg .e circle{fill:var(--gold)}
@@ -560,30 +561,30 @@ body.fx{background:var(--paper);position:relative}
 .home .hello[hidden]{display:none}
 .home .hello span{color:var(--muted);font-weight:400;font-size:1.1rem}
 .home .hello b{color:var(--ink);background:linear-gradient(transparent 62%,var(--gold-soft) 62%);padding:0 .2rem}
-/* الموبايل: كل حاجة تحت بعض، و«روابط أخرى» في آخر الصفحة */
+/* «أهلاً» و«أكمل» وأول مرة فوق، والمواد تحتهم (روابط أخرى وجديد في المواد اتشالوا 2026-11-28) */
 .home main{display:flex;flex-direction:column}
 .home main>*{order:5}
 .home .dash,.home .dside{display:contents}
-.home .dmore{order:40}
 .home main>.offline{order:41}
 .home .dside>*{order:1}
-.home .dside>.dmore{order:40}
-.home .news{order:2}
-/* الشاشة العريضة (التابلت والكمبيوتر): «أكمل» في نص، و«جديد في المواد» جنبه، و«روابط أخرى» في المساحة اللي تحت «أكمل» */
-@media (min-width:860px){
-  .home .dash{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.1rem;align-items:start;order:1;margin-bottom:.4rem}
-  .home .dash:has(>.news[hidden]){grid-template-columns:minmax(0,1fr)}
-  .home .dside{display:flex;flex-direction:column}
-  .home .dside>*{order:0}
-  .home .dash .news{margin:0}
-  .home .dmore #more-h{margin-top:.6rem}
-  .home .dmore .hlinks{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .home .resume{margin-bottom:.4rem}
-}
-/* سهم طيّ «مواد الكلية» و«كورسات» */
+/* سطرين في كارت المادة: آخر محاضرة، وآخر شيت (بند 27) */
+.course .clasts{display:flex;flex-direction:column;gap:.15rem;margin:-.25rem 0 .55rem;padding-top:.4rem;border-top:1px dashed var(--rule)}
+.course .clast{font-size:.9rem;line-height:1.45;color:var(--ink);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.course .clast i{font-style:normal;font-weight:700;color:var(--gold-ink)}
+@media (max-width:520px){.course .clast i{display:block}.course .clast{-webkit-line-clamp:3}}
+/* سهم طيّ «المقررات الدراسية» و«الكورسات» و«مقررات كلية الهندسة» */
 .fold-h{display:flex}
 .fold-h .fold{display:inline-flex;align-items:center;gap:.6rem;min-height:2.75rem;padding:0 .2rem;font:inherit;font-weight:700;color:inherit;background:none;border:0;cursor:pointer}
 .fold-h .chev{width:2.2rem;height:2.2rem;padding:.3rem;border-radius:50%;border:2px solid var(--rule);background:var(--surface);color:var(--gold-ink);transition:transform .2s}
 .fold-h .fold:hover .chev{border-color:var(--gold)}
 .fold-h .fold[aria-expanded="false"] .chev{transform:rotate(90deg)}
 .fold-h[hidden]{display:none}
+
+/* «لديك كود مادة؟» في صفحة «حسابك» (2026-11-28) */
+.gcard{margin-top:1rem}.gcard h2{font-size:1.15rem;margin-bottom:.3rem}.gcard p{color:var(--muted);font-size:1rem}.gcard .gcode .row{justify-content:flex-start}.gcard .gcode .fine{text-align:start}
+
+/* (طلب نوح 2026-11-28، بند 33) كلمة «مُستدرِك» في الشعار: خط كوفي (Reem Kufi، رخصة OFL، الحروف العربي بس) ودهبي */
+@font-face{font-family:"Reem Kufi";font-weight:700;font-display:swap;src:url(fonts/reemkufi-ar-700.woff2) format("woff2");unicode-range:U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+FB50-FDFF, U+FE70-FEFC}
+.topnav .brand span{font-family:"Reem Kufi",var(--f-ui);font-weight:700;font-size:1.5rem;line-height:1.3;padding-bottom:.1rem;background:linear-gradient(180deg,#B9892C 0%,#8A6414 55%,#6E4F0E 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+[data-theme="dark"] .topnav .brand span{background-image:linear-gradient(180deg,#F6E3A8 0%,#D9B25E 55%,#B48A35 100%)}
+@media (forced-colors:active){.topnav .brand span{color:CanvasText;background:none}}
